@@ -15,7 +15,6 @@ bench-data
 
 # editors
 .idea
-.vscode
 debug.log
 
 # misc
