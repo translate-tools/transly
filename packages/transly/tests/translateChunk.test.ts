@@ -139,7 +139,9 @@ describe('outgoing request', () => {
 		await translateChunk(
 			items,
 			'de',
-			makeConfig({ llm: { model: 'test', baseUrl: 'https://my.proxy/v1' } }),
+			makeConfig({
+				llm: { model: 'test', apiKey: '', baseUrl: 'https://my.proxy/v1' },
+			}),
 		);
 
 		expect(fetchSpy).toBeCalledWith(
@@ -153,7 +155,9 @@ describe('outgoing request', () => {
 		await translateChunk(
 			items,
 			'de',
-			makeConfig({ llm: { model: 'test', baseUrl: 'https://my.proxy/v1/' } }),
+			makeConfig({
+				llm: { model: 'test', apiKey: '', baseUrl: 'https://my.proxy/v1/' },
+			}),
 		);
 
 		expect(fetchSpy).toBeCalledWith(
