@@ -60,8 +60,11 @@ export default function (program: Command) {
 				isTTY: process.stdout.isTTY ?? false,
 			});
 
-			let translator = config.translateChunk ?? translateChunk;
-			if (!config.llm) translator = anylangAdapter(new MicrosoftTranslator());
+			let translator = config.translateChunk;
+			if (!translator) {
+				if (config.llm) translator = translateChunk;
+				else translator = anylangAdapter(new MicrosoftTranslator());
+			}
 
 			try {
 				await runTranslation(config, makeNodeFsAdapter(), translator, (event) => {
