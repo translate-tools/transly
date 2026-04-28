@@ -13,7 +13,8 @@ import { runTranslation } from '../../src/runner.js';
 
 import { makeMemFs } from '../stubs/makeMemFs.js';
 
-const isE2EEnabled = process.env.TEST_E2E_LLM !== 'enabled' && process.env.OPENAI_API_KEY;
+const isE2EEnabled =
+	process.env.TEST_E2E_LLM !== 'enabled' || !process.env.OPENAI_API_KEY;
 
 const containWords = (words: (string | RegExp)[], ignoreCase = false) =>
 	expect.toSatisfy((value: string) => {
