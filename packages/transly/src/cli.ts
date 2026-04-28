@@ -26,6 +26,14 @@ const translateOptionsSchema = z.object({
 
 const cache = program.command('cache').description('Cache operations');
 
+export const labelLanguageCode = (languageCode: string) => {
+	const languageName = new Intl.DisplayNames('en', { type: 'language' }).of(
+		languageCode,
+	);
+	const nameHasNotFound = languageName === languageCode;
+	return nameHasNotFound ? languageCode : `${languageName} (${languageCode})`;
+};
+
 cache
 	.command('hydrate')
 	.alias('restore')
@@ -81,8 +89,10 @@ program
 
 		const effectiveConcurrency = config.concurrency ?? DEFAULT_CONCURRENCY;
 
-		console.log(`Source language:  ${config.sourceLang}`);
-		console.log(`Target languages: ${config.targetLangs.join(', ')}`);
+		console.log(`Source language:  ${labelLanguageCode(config.sourceLang)}`);
+		console.log(
+			`Target languages: ${config.targetLangs.map(labelLanguageCode).join(', ')}`,
+		);
 		console.log(`Locales dir:      ${config.localesDir}`);
 		console.log(`Cache dir:        ${getCacheDir(config)}`);
 		console.log(`Concurrency:      ${effectiveConcurrency} workers`);
