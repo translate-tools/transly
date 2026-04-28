@@ -1,0 +1,4 @@
+{
+	"introduction": "My name is {{name}}, I like {{hobby}}",
+	"strength": "My name is {{name}}, I can pull {{weight}}kg and hang {{hangTime}} minutes!"
+}

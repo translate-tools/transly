@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { defineConfig } from '../src';
+import { defineConfig } from '../../src';
 
 export const waitRandom = async (minMs = 50, maxMs = 3000) => {
 	const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;

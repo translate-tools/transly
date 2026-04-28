@@ -1,0 +1,8 @@
+{
+	"name": "transly",
+	"author": "Robert Vitonsky <robert@vitonsky.net>",
+	"license": "Apache-2.0",
+	"dependencies": {
+		"anylang": "^3.3.3"
+	}
+}
