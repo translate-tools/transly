@@ -75,11 +75,13 @@ describe.skipIf(isE2EEnabled).concurrent('i18n locale files translation', () => 
 				localesDir: '/locales',
 				cacheDir: '/.transly',
 
-				apiKey: process.env.OPENAI_API_KEY!,
-				baseUrl: process.env.OPENAI_API_URL,
+				llm: {
+					apiKey: process.env.OPENAI_API_KEY!,
+					baseUrl: process.env.OPENAI_API_URL,
 
-				model,
-				contextPrompt: `We translate the user profiles bio with their stories. Make it sound native`,
+					model,
+					contextPrompt: `We translate the user profiles bio with their stories. Make it sound native`,
+				},
 
 				maxBatchSize: 50, // optional, default: 50
 				fetch: fetchSpy,

@@ -1,4 +1,4 @@
-import { computeHash, readCache, writeCache } from './cache.js';
+import { computeHash, getCacheDir, readCache, writeCache } from './cache.js';
 import { flattenJson } from './flatten.js';
 import { scanNamespaces } from './scanner.js';
 import type { Config, FsAdapter } from './types.js';
@@ -8,6 +8,8 @@ export async function fillCacheFromTranslations(
 	config: Config,
 	fs: FsAdapter = makeNodeFsAdapter(),
 ): Promise<void> {
+	const cacheDir = getCacheDir(config);
+
 	// Fetch the namespaces content
 	const sourceNamespaceContent: Record<string, Map<string, unknown>> = {};
 	const sourceNamespaces = await scanNamespaces(
@@ -28,7 +30,7 @@ export async function fillCacheFromTranslations(
 		const namespaces = await scanNamespaces(config.localesDir, language, fs);
 
 		for (const { namespace, content } of namespaces) {
-			const cache = await readCache(config.cacheDir, namespace, language, fs);
+			const cache = await readCache(cacheDir, namespace, language, fs);
 			Object.entries(flattenJson(content)).forEach(([key, translation]) => {
 				// Skip keys that does not exist in source locale
 				if (!sourceNamespaceContent[namespace]?.has(key)) return;
@@ -41,7 +43,7 @@ export async function fillCacheFromTranslations(
 			});
 
 			// Persist cache immediately after each successful chunk
-			await writeCache(config.cacheDir, namespace, language, cache, fs);
+			await writeCache(cacheDir, namespace, language, cache, fs);
 		}
 	}
 }

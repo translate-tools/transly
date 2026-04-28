@@ -10,8 +10,10 @@ export function makeConfig(overrides: Partial<Config> = {}): Config {
 		targetLangs: ['de'],
 		localesDir: '/locales',
 		cacheDir: '/cache',
-		model: 'test-model',
-		apiKey: 'test-key',
+		llm: {
+			model: 'test-model',
+			apiKey: 'test-key',
+		},
 		maxBatchSize: 10,
 		...overrides,
 	};

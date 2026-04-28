@@ -4,6 +4,7 @@ import { resolve } from 'path';
 import { z } from 'zod';
 
 import { description, name, version } from '../package.json';
+import { getCacheDir } from './cache';
 import { fillCacheFromTranslations } from './cacheUtils';
 import { DEFAULT_CONCURRENCY } from './concurrency.js';
 import { loadConfig } from './config.js';
@@ -83,9 +84,11 @@ program
 		console.log(`Source language:  ${config.sourceLang}`);
 		console.log(`Target languages: ${config.targetLangs.join(', ')}`);
 		console.log(`Locales dir:      ${config.localesDir}`);
-		console.log(`Cache dir:        ${config.cacheDir}`);
-		console.log(`Model:            ${config.model}`);
+		console.log(`Cache dir:        ${getCacheDir(config)}`);
 		console.log(`Concurrency:      ${effectiveConcurrency} workers`);
+		if (config.llm) {
+			console.log(`Model:            ${config.llm.model}`);
+		}
 		console.log('');
 
 		const renderer = new ProgressRenderer({ isTTY: process.stdout.isTTY ?? false });

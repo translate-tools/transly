@@ -1,6 +1,12 @@
 import { join } from 'path';
 
-import { computeHash, getChangedKeys, readCache, writeCache } from './cache.js';
+import {
+	computeHash,
+	getCacheDir,
+	getChangedKeys,
+	readCache,
+	writeCache,
+} from './cache.js';
 import { chunkItems, DEFAULT_MAX_BATCH_SIZE } from './chunker.js';
 import { DEFAULT_CONCURRENCY, runWithConcurrency } from './concurrency.js';
 import { flattenJson, unflattenJson } from './flatten.js';
@@ -84,7 +90,8 @@ async function runTask(
 	translateFn: typeof translateChunk,
 	onProgress?: ProgressCallback,
 ): Promise<void> {
-	const cache = await readCache(config.cacheDir, namespace, targetLang, fs);
+	const cacheDir = getCacheDir(config);
+	const cache = await readCache(cacheDir, namespace, targetLang, fs);
 	const changedKeys = getChangedKeys(flatSource, cache);
 
 	onProgress?.({
@@ -121,7 +128,7 @@ async function runTask(
 			};
 		}
 
-		await writeCache(config.cacheDir, namespace, targetLang, cache, fs);
+		await writeCache(cacheDir, namespace, targetLang, cache, fs);
 
 		onProgress?.({
 			type: 'chunk_done',

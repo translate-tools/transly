@@ -18,6 +18,12 @@ export type CacheFile = Record<string, CacheEntry>;
 
 export type PromptGenerator = (targetLanguage: string) => string;
 
+export type TranslateChunkFn = (
+	items: TranslationItem[],
+	targetLang: string,
+	config: Config,
+) => Promise<LlmTranslationResponse>;
+
 /**
  * Validated user configuration loaded from `i18n.config.js`.
  */
@@ -28,32 +34,40 @@ export type Config = {
 	targetLangs: string[];
 	/** Path to the locales directory, e.g. "./src/locales" */
 	localesDir: string;
+
 	/** Directory where cache files are stored, e.g. "./.i18n-cache" */
-	cacheDir: string;
-	/** LLM model identifier, e.g. "openai/gpt-4o-mini" */
-	model: string;
-	/** API key for the LLM provider */
-	apiKey: string;
-	/** Optional base URL for the API (defaults to OpenAI-compatible endpoint) */
-	baseUrl?: string;
-	/** System prompt instructing the LLM how to translate */
-	systemPrompt?: string | PromptGenerator;
-	/**
-	 * Prompt to explain the app context and the terms to the LLM
-	 */
-	contextPrompt?: string | PromptGenerator;
-	/** Maximum number of keys per LLM request batch */
-	maxBatchSize?: number;
+	cacheDir?: string;
+
 	/**
 	 * Maximum number of (namespace × language) tasks to run simultaneously.
 	 * Defaults to 10.
 	 */
 	concurrency?: number;
-	translateChunk?: (
-		items: TranslationItem[],
-		targetLang: string,
-		config: Config,
-	) => Promise<LlmTranslationResponse>;
+
+	/** Maximum number of keys per LLM request batch */
+	maxBatchSize?: number;
+
+	translateChunk?: TranslateChunkFn;
+
+	llm?: {
+		/** LLM model identifier, e.g. "openai/gpt-4o-mini" */
+		model: string;
+
+		/** Optional base URL for the API (defaults to OpenAI-compatible endpoint) */
+		baseUrl?: string;
+
+		/** API key for the LLM provider */
+		apiKey?: string;
+
+		/** System prompt instructing the LLM how to translate */
+		systemPrompt?: string | PromptGenerator;
+
+		/**
+		 * Prompt to explain the app context and the terms to the LLM
+		 */
+		contextPrompt?: string | PromptGenerator;
+	};
+
 	debug?: boolean;
 	fetch?: typeof fetch;
 };

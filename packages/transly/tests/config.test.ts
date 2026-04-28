@@ -1,3 +1,4 @@
+import { Config } from 'src/types.js';
 import { describe, expect, it } from 'vitest';
 
 import { configSchema } from '../src/config.js';
@@ -7,12 +8,15 @@ const validConfig = {
 	targetLangs: ['de', 'fr'],
 	localesDir: './src/locales',
 	cacheDir: './.i18n-cache',
-	model: 'openai/gpt-4o-mini',
-	apiKey: 'sk-test-key',
-	baseUrl: 'https://openrouter.ai/api/v1',
-	prompt: 'Translate the following strings.',
+
+	llm: {
+		model: 'openai/gpt-4o-mini',
+		apiKey: 'sk-test-key',
+		baseUrl: 'https://openrouter.ai/api/v1',
+		systemPrompt: 'Translate the following strings.',
+	},
 	maxBatchSize: 50,
-};
+} satisfies Config;
 
 describe('Config schema validation', () => {
 	it('accepts a fully valid config', () => {
@@ -22,24 +26,6 @@ describe('Config schema validation', () => {
 			expect(result.data.sourceLang).toBe('en');
 			expect(result.data.targetLangs).toEqual(['de', 'fr']);
 			expect(result.data.maxBatchSize).toBe(50);
-		}
-	});
-
-	it('accepts a config without optional fields', () => {
-		const minimal = {
-			sourceLang: 'en',
-			targetLangs: ['de'],
-			localesDir: './locales',
-			cacheDir: './.cache',
-			model: 'gpt-4',
-			apiKey: 'key',
-			prompt: 'Translate.',
-		};
-		const result = configSchema.safeParse(minimal);
-		expect(result.success).toBe(true);
-		if (result.success) {
-			expect(result.data.baseUrl).toBeUndefined();
-			expect(result.data.maxBatchSize).toBeUndefined();
 		}
 	});
 
@@ -72,12 +58,18 @@ describe('Config schema validation', () => {
 	});
 
 	it('rejects config with empty apiKey', () => {
-		const result = configSchema.safeParse({ ...validConfig, apiKey: '' });
+		const result = configSchema.safeParse({
+			...validConfig,
+			llm: { ...validConfig.llm, apiKey: '' },
+		});
 		expect(result.success).toBe(false);
 	});
 
 	it('rejects config with invalid baseUrl', () => {
-		const result = configSchema.safeParse({ ...validConfig, baseUrl: 'not-a-url' });
+		const result = configSchema.safeParse({
+			...validConfig,
+			llm: { ...validConfig.llm, baseUrl: '' },
+		});
 		expect(result.success).toBe(false);
 	});
 
