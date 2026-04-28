@@ -236,7 +236,7 @@ Cache-driven LLM i18n translation CLI
 
 Options:
   -V, --version          output the version number
-  -c, --config <path>    Path to the i18n config file (default: "./transly.config.js")
+  -c, --config <path>    Path to config file (default: "./transly.config.js")
   -h, --help             display help for command
 ```
 

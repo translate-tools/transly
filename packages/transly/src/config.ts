@@ -1,3 +1,5 @@
+import { findUp } from 'find-up';
+import { resolve } from 'path';
 import { z } from 'zod';
 
 import type { Config, TranslateChunkFn } from './types';
@@ -47,7 +49,7 @@ export const configSchema: z.ZodType<Config> = z.object({
  * @returns Validated Config object
  * @throws ZodError if the config is invalid, or Error if the file cannot be loaded
  */
-export async function loadConfig(configPath: string): Promise<Config> {
+export async function loadConfigFile(configPath: string): Promise<Config> {
 	let raw: unknown;
 
 	try {
@@ -66,8 +68,28 @@ export async function loadConfig(configPath: string): Promise<Config> {
 		const messages = result.error.errors
 			.map((e) => `  - ${e.path.join('.')}: ${e.message}`)
 			.join('\n');
-		throw new Error(`Invalid i18n config:\n${messages}`);
+		throw new Error(`Invalid config:\n${messages}`);
 	}
 
 	return result.data;
+}
+
+export async function loadConfig(path?: string) {
+	const configPath = path
+		? resolve(path)
+		: await findUp(['transly.config.ts', 'transly.config.js']);
+
+	if (!configPath) throw new Error('Config file is not found');
+
+	let config;
+	try {
+		config = await loadConfigFile(configPath);
+	} catch (err) {
+		console.error(
+			`\n❌ Config error: ${err instanceof Error ? err.message : String(err)}`,
+		);
+		process.exit(1);
+	}
+
+	return { config, configPath };
 }

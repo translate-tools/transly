@@ -26,12 +26,13 @@
 		"build": "tsdown",
 		"test": "vitest",
 		"publish": "npm test && npm run build && npm publish .publish",
-		"example": "cd examples && tsx ../src/cli translate -c ./transly.config.ts",
-		"preview": "cd examples && tsx ../dist/cli translate -c ./transly.config.ts",
+		"example": "cd examples && tsx ../src/cli translate",
+		"preview": "cd examples && tsx ../dist/cli translate",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"commander": "^14.0.0",
+		"find-up": "^8.0.0",
 		"openai": "^6.34.0",
 		"zod": "^3.25.28"
 	},
