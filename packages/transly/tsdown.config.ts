@@ -12,7 +12,10 @@ function copyRecursive(src: string, dest: string) {
 }
 
 export default defineConfig({
-	entry: ['src/cli/index.ts', 'src/index.ts'],
+	entry: {
+		index: 'src/index.ts',
+		cli: 'src/cli/index.ts',
+	},
 	format: ['esm', 'cjs'],
 	dts: true,
 	outputOptions: {
@@ -33,6 +36,7 @@ export default defineConfig({
 				// copy metadata
 				for (const file of [
 					'package.json',
+					{ from: '../../LICENSE', to: 'LICENSE' },
 					{ from: '../../README.md', to: 'README.md' },
 				]) {
 					const { from, to } =
