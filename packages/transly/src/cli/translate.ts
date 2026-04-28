@@ -63,7 +63,11 @@ export default function (program: Command) {
 			let translator = config.translateChunk;
 			if (!translator) {
 				if (config.llm) translator = translateChunk;
-				else translator = anylangAdapter(new MicrosoftTranslator());
+				else
+					translator = anylangAdapter(
+						new MicrosoftTranslator(),
+						MicrosoftTranslator.getSupportedLanguages(),
+					);
 			}
 
 			try {

@@ -4,8 +4,18 @@ import { TranslateChunkFn } from './types';
 
 export const anylangAdapter = (
 	translator: TranslatorInstanceMembers,
+	supportedLanguages?: string[],
 ): TranslateChunkFn => {
 	return async (items, language, config) => {
+		// Try to fix unsupported languages
+		if (supportedLanguages && !supportedLanguages.includes(language)) {
+			// Try to use language group
+			const languageGroup = language.split('-')[0];
+			if (supportedLanguages.includes(languageGroup)) {
+				language = languageGroup;
+			}
+		}
+
 		const translations = await translator.translateBatch(
 			items.map((item) => item.value),
 			config.sourceLang,
