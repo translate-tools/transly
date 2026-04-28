@@ -2,6 +2,7 @@ booleans
 destructured
 langs
 monorepo
+readme
 recurse
 transly
 unescaped
