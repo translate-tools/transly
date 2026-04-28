@@ -1,0 +1,130 @@
+{
+	"common": {
+		"ok": "OK",
+		"cancel": "Cancel",
+		"save": "Save",
+		"delete": "Delete",
+		"loading": "Loading...",
+		"error": "Something went wrong"
+	},
+	"auth": {
+		"login": {
+			"title": "Sign in to your account",
+			"email": "Email address",
+			"password": "Password",
+			"submit": "Sign in",
+			"forgot": "Forgot your password?",
+			"success": "Welcome back, {{name}}!",
+			"error": "Invalid email or password"
+		},
+		"register": {
+			"title": "Create account",
+			"submit": "Register",
+			"success": "Account created for {{name}}",
+			"terms": "By signing up you agree to our {{termsLink}}"
+		}
+	},
+	"profile": {
+		"title": "Profile",
+		"greeting": "Hello, {{name}} 👋",
+		"stats": {
+			"followers": "{{count}} follower",
+			"followers_plural": "{{count}} followers",
+			"posts": "{{count}} post",
+			"posts_plural": "{{count}} posts"
+		},
+		"actions": {
+			"edit": "Edit profile",
+			"logout": "Log out"
+		}
+	},
+	"dashboard": {
+		"welcome": "Welcome to your dashboard, {{name}}",
+		"notifications": {
+			"title": "Notifications",
+			"empty": "You have no notifications",
+			"unread": "You have {{count}} unread message",
+			"unread_plural": "You have {{count}} unread messages"
+		}
+	},
+	"errors": {
+		"network": "Network error. Please try again.",
+		"timeout": "Request timed out after {{seconds}} seconds",
+		"403": "Access denied",
+		"404": "Page not found",
+		"500": "Internal server error"
+	},
+	"forms": {
+		"validation": {
+			"required": "{{field}} is required",
+			"email": "Please enter a valid email",
+			"minLength": "{{field}} must be at least {{min}} characters",
+			"maxLength": "{{field}} must be at most {{max}} characters"
+		}
+	},
+	"dates": {
+		"today": "Today",
+		"yesterday": "Yesterday",
+		"tomorrow": "Tomorrow",
+		"relative": {
+			"minutes": "{{count}} minute ago",
+			"minutes_plural": "{{count}} minutes ago",
+			"hours": "{{count}} hour ago",
+			"hours_plural": "{{count}} hours ago"
+		}
+	},
+	"ecommerce": {
+		"cart": {
+			"title": "Your cart",
+			"empty": "Your cart is empty",
+			"items": "{{count}} item",
+			"items_plural": "{{count}} items",
+			"total": "Total: {{price}} {{currency}}"
+		},
+		"checkout": {
+			"title": "Checkout",
+			"success": "Order #{{orderId}} placed successfully",
+			"failure": "Payment failed. Try again."
+		},
+		"product": {
+			"inStock": "In stock",
+			"outOfStock": "Out of stock",
+			"reviews": "{{count}} review",
+			"reviews_plural": "{{count}} reviews"
+		}
+	},
+	"features": {
+		"search": {
+			"placeholder": "Search for {{entity}}...",
+			"noResults": "No results found for \"{{query}}\""
+		},
+		"upload": {
+			"title": "Upload files",
+			"progress": "Uploading {{fileName}} ({{progress}}%)",
+			"done": "{{fileName}} uploaded successfully"
+		}
+	},
+	"emails": {
+		"welcome": {
+			"subject": "Welcome, {{name}}!",
+			"body": "Hi {{name}}, thanks for joining {{platform}}."
+		},
+		"resetPassword": {
+			"subject": "Reset your password",
+			"body": "Click here to reset your password: {{link}}"
+		}
+	},
+	"system": {
+		"maintenance": "System is under maintenance from {{start}} to {{end}}",
+		"version": "Version {{version}}"
+	},
+	"arrayExample": ["First item", "Second item with {{variable}}", "Third item"],
+	"edgeCases": {
+		"html": "<strong>{{name}}</strong> has logged in",
+		"escaped": "Use \\{{braces}} carefully",
+		"multiline": "Line 1\nLine 2\nLine 3",
+		"empty": "",
+		"numberLike": "12345",
+		"booleanLike": "true"
+	}
+}
