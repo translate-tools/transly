@@ -18,11 +18,9 @@ export default defineConfig({
 	},
 	format: ['esm', 'cjs'],
 	dts: true,
-	outputOptions: {
-		entryFileNames: '[name].js',
-		chunkFileNames: '[name].js',
-		assetFileNames: '[name][extname]', // ← key line
-	},
+	exports: true,
+	hash: false,
+
 	plugins: [
 		{
 			name: 'prepare-publish',

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { MicrosoftTranslator } from 'anylang/translators';
+import { MicrosoftTranslator } from 'anylang/translators/index.js';
 import { Command } from 'commander';
 import { anylangAdapter } from 'src/anylang';
 import { loadConfig } from 'src/config';
