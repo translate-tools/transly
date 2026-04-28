@@ -39,7 +39,7 @@
 	"scripts": {
 		"build": "tsdown",
 		"test": "vitest",
-		"publish": "npm test && npm run build && npm publish .publish",
+		"release": "vitest run && npm run build && npm publish .publish",
 		"example": "cd examples/free && tsx ../../src/cli translate",
 		"preview": "cd examples/free && tsx ../../dist/cli translate",
 		"typecheck": "tsc --noEmit"
