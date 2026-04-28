@@ -14,7 +14,7 @@ export default defineConfig({
 	targetLangs: ['cs', 'da', 'de', 'es', 'fr', 'hu', 'it', 'ja'],
 	localesDir: './locales',
 
-	cacheDir: './locales/.transly',
+	maxBatchSize: 5,
 	async translateChunk(items, language) {
 		await waitRandom();
 		return Object.fromEntries(

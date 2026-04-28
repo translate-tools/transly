@@ -1,6 +1,7 @@
 {
 	"hello": "Hello",
 	"nested": {
-		"world": "World2"
-	}
+		"world": "World"
+	},
+	"languages": ["cs", "da", "de", "es", "fr", "hu", "it", "ja"]
 }
