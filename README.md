@@ -263,7 +263,7 @@ Contributions are very welcome — whether it’s code, ideas, bug reports, or i
 
 If you find this tool useful:
 
-* ⭐ Star the repository
+* ⭐ Star the [repository](https://github.com/translate-tools/transly/)
 * 📢 Share it with others
 * 💡 Help shape it with your feedback
 
@@ -273,6 +273,6 @@ Want to help?
 
 * Fix something
 * Suggest something
-* Break something (and report it)
+* Break something (and [report it](https://github.com/translate-tools/transly/issues))
 
-And if you like it, a ⭐ on GitHub goes a long way.
+And if you like it, a [⭐ on GitHub](https://github.com/translate-tools/transly/) goes a long way.

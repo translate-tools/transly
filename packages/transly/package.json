@@ -1,7 +1,7 @@
 {
 	"name": "transly",
 	"version": "0.2.0",
-	"description": "Cache-driven LLM i18n translation CLI",
+	"description": "Cache-driven incremental translation (via LLM, GoogleTranslate, etc.)",
 	"keywords": [
 		"i18n",
 		"i18next",
@@ -11,11 +11,25 @@
 		"l10n",
 		"globalization"
 	],
+	"homepage": "https://github.com/translate-tools/transly",
+	"bugs": {
+		"url": "https://github.com/translate-tools/transly/issues"
+	},
 	"author": "Robert Vitonsky <robert@vitonsky.net>",
-	"license": "MIT",
+	"license": "Apache-2.0",
 	"type": "module",
 	"engines": {
 		"node": ">=22"
+	},
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"onFail": "error"
+		},
+		"packageManager": {
+			"name": "npm",
+			"onFail": "error"
+		}
 	},
 	"bin": {
 		"transly": "./dist/cli.js"
