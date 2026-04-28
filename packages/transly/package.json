@@ -26,6 +26,8 @@
 		"build": "tsdown",
 		"test": "vitest",
 		"publish": "npm publish .publish",
+		"example": "cd examples && tsx ../src/cli translate -c ./transly.config.ts",
+		"preview": "cd examples && tsx ../dist/cli translate -c ./transly.config.ts",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
