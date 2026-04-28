@@ -13,29 +13,29 @@ exports[`ProgressRenderer — TTY > full TTY run matches snapshot 1`] = `
     "  [de] notes                  ░░░░░░░░░░  translating…  (0/3 keys)
   Progress: 0/4 tasks done  [0.0s]
 ",
-    "[3A",
+    "[2A",
     "[0J",
     "  [de] notes                  ███████░░░  chunk 2/2  (2/3 keys)
   Progress: 0/4 tasks done  [0.0s]
 ",
-    "[3A",
+    "[2A",
     "[0J",
     "  [de] notes                  ██████████  ✓  3 key(s) translated
   Progress: 1/4 tasks done  [0.0s]
 ",
-    "[3A",
+    "[2A",
     "[0J",
     "  [de] notes                  ██████████  ✓  3 key(s) translated
   [fr] notes                  ░░░░░░░░░░  translating…  (0/0 keys)
   Progress: 1/4 tasks done  [0.0s]
 ",
-    "[4A",
+    "[3A",
     "[0J",
     "  [de] notes                  ██████████  ✓  3 key(s) translated
   [fr] notes                  ──────────  ✓  no changes
   Progress: 2/4 tasks done  [0.0s]
 ",
-    "[4A",
+    "[3A",
     "[0J",
     "  [de] notes                  ██████████  ✓  3 key(s) translated
   [fr] notes                  ──────────  ✓  no changes

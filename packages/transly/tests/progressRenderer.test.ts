@@ -196,6 +196,25 @@ describe('ProgressRenderer — TTY', () => {
 		expect(combined).toContain('\x1b[');
 	});
 
+	it('cursor-up escape count matches the number of lines actually written', () => {
+		const { renderer, writes } = makeRenderer(true);
+
+		// First draw: 1 task row + 1 footer line → 2 lines written (rows.length + 1 = 2)
+		renderer.onEvent(SCAN);
+		renderer.onEvent(TASK_START_DE);
+
+		// Second draw: triggers the erase+redraw, so a cursor-up escape is emitted
+		renderer.onEvent(CHUNK_DONE);
+
+		// Collect all cursor-up escapes produced during redraws
+		// eslint-disable-next-line no-control-regex
+		const upEscapes = writes.filter((w) => /^\x1b\[\d+A$/.test(w));
+		expect(upEscapes.length).toBeGreaterThan(0);
+
+		// 1 row + 1 footer = 2 lines → cursor must move up exactly 2, not 3
+		expect(upEscapes[0]).toBe('\x1b[2A');
+	});
+
 	it('printSummary emits a completion line via log()', () => {
 		const { renderer, lines } = makeRenderer(true);
 		feed(renderer, [SCAN, TASK_START_DE, TASK_DONE_DE]);

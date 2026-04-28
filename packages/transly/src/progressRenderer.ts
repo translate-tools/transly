@@ -194,7 +194,7 @@ export class ProgressRenderer {
 		const output = [...rows, footer, ''].join('\n');
 
 		this.write(output);
-		this.tableLines = rows.length + 2;
+		this.tableLines = rows.length + 1;
 	}
 
 	private buildTableRows(): string[] {
