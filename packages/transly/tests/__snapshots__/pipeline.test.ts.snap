@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Full translation pipeline > translates all keys when cache is empty > Storage state 1`] = `
+Map {
+  "/locales/en/notes.json" => "{"title":"Hello","message":"World","tags":["Ideas","Health","Well Being"],"foo.bar":"Name with dots","foo":{"bar":"Another value"}}",
+  "/cache/notes.de.json" => "{
+  "title": {
+    "hash": "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969",
+    "translation": "[de] Hello"
+  },
+  "message": {
+    "hash": "78ae647dc5544d227130a0682a51e30bc7777fbb6d8a8f17007463a3ecd1d524",
+    "translation": "[de] World"
+  },
+  "tags[0]": {
+    "hash": "1c403a939dd46fcbdccb824dbbcabde4039750531e25d93409cf94e9ad83eb20",
+    "translation": "[de] Ideas"
+  },
+  "tags[1]": {
+    "hash": "55898449eb74fb2e348d13e5a5d84ab019bb87ea92687b50b3d3302eb409b784",
+    "translation": "[de] Health"
+  },
+  "tags[2]": {
+    "hash": "b43eb74d88409f2ea1146d4062b4fd999b6fcd2766b3d3e84c4d5bc79fa38095",
+    "translation": "[de] Well Being"
+  },
+  "[\\"foo.bar\\"]": {
+    "hash": "bb48654c4a2e5a3bd29c5a3e9f4be137b7827dc24fd08eac50ec26e162c8d192",
+    "translation": "[de] Name with dots"
+  },
+  "foo.bar": {
+    "hash": "52c309af647f2daec76f143849f95b74f220275260a90a1f11e2c4a3c700a4cb",
+    "translation": "[de] Another value"
+  }
+}",
+  "/locales/de/notes.json" => "{
+  "title": "[de] Hello",
+  "message": "[de] World",
+  "tags": [
+    "[de] Ideas",
+    "[de] Health",
+    "[de] Well Being"
+  ],
+  "foo.bar": "[de] Name with dots",
+  "foo": {
+    "bar": "[de] Another value"
+  }
+}",
+}
+`;

@@ -1,0 +1,44 @@
+{
+	"name": "transly",
+	"version": "0.2.0",
+	"description": "Cache-driven LLM i18n translation CLI",
+	"keywords": [
+		"i18n",
+		"i18next",
+		"internationalization",
+		"translation",
+		"localization",
+		"l10n",
+		"globalization"
+	],
+	"author": "Robert Vitonsky <robert@vitonsky.net>",
+	"license": "MIT",
+	"type": "module",
+	"engines": {
+		"node": ">=22"
+	},
+	"bin": {
+		"transly": "./dist/cli.js"
+	},
+	"main": "./dist/index.js",
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsdown",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"commander": "^14.0.0",
+		"openai": "^6.34.0",
+		"zod": "^3.25.28"
+	},
+	"devDependencies": {
+		"@types/node": "^22.0.0",
+		"dotenv": "^17.4.2",
+		"memfs": "^4.0.0",
+		"tsdown": "^0.12.0",
+		"typescript": "^5.9.3",
+		"vitest": "^3.0.0"
+	}
+}
