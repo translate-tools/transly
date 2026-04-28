@@ -24,7 +24,7 @@ describe.sequential('Rebuild the cache', () => {
 		const callLog: TranslateCallLog[] = [];
 		await runTranslation(config, fs, makeMockTranslate(callLog));
 
-		expect(JSON.parse(store.get('/locales/de/notes.json')!)).toStrictEqual({
+		expect(JSON.parse(store.get('/locales/de/notes.json') ?? '')).toStrictEqual({
 			title: '[de] Hello',
 			message: '[de] World',
 			tags: ['[de] Ideas', '[de] Health', '[de] Well Being'],

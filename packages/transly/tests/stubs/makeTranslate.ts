@@ -11,6 +11,7 @@ export type TranslateCallLog = { items: TranslationItem[]; targetLang: string };
  * Pass a `callLog` array to record every invocation for later assertions.
  */
 export function makeMockTranslate(callLog: TranslateCallLog[] = []) {
+	// eslint-disable-next-line @typescript-eslint/require-await
 	return vi.fn(async (items: TranslationItem[], targetLang: string) => {
 		callLog.push({ items: [...items], targetLang });
 

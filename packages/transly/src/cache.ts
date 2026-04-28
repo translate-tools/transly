@@ -78,16 +78,16 @@ export async function writeCache(
  *   - hash of source value has changed
  */
 export function getChangedKeys(
-	flatSource: Record<string, string>,
+	flatSource: Record<string, unknown>,
 	cache: CacheFile,
 ): string[] {
 	const changed: string[] = [];
 
 	for (const [key, value] of Object.entries(flatSource)) {
 		const entry = cache[key];
-		const hash = computeHash(value);
+		const hash = computeHash(String(value));
 
-		if (!entry || entry.hash !== hash) {
+		if (entry?.hash !== hash) {
 			changed.push(key);
 		}
 	}

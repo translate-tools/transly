@@ -25,11 +25,11 @@ let input = '';
 process.stdin.setEncoding('utf8');
 
 process.stdin.on('data', (chunk) => {
-	input += chunk;
+	input += chunk as string;
 });
 
 process.stdin.on('end', () => {
-	const report: ESLintResult[] = JSON.parse(input);
+	const report = JSON.parse(input) as ESLintResult[];
 
 	const newWords = new Set<string>();
 

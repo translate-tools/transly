@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import type { FsAdapter } from '../../src/types.js';
 
 /**

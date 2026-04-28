@@ -1,4 +1,4 @@
-import { globalIgnores } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import paths from 'eslint-plugin-paths';
@@ -13,7 +13,7 @@ import eslint from '@eslint/js';
 const readLinesInFile = (file: string) =>
 	readFileSync(file, { encoding: 'utf8' }).split('\n');
 
-export default tseslint.config(
+export default defineConfig(
 	eslint.configs.recommended,
 	tseslint.configs.strictTypeChecked,
 	tseslint.configs.stylisticTypeCheckedOnly,
@@ -139,42 +139,6 @@ export default tseslint.config(
 				},
 			],
 
-			// Types
-			// TODO: enable and fix all cases
-			'@typescript-eslint/no-require-imports': 'off',
-			'@typescript-eslint/unbound-method': 'off',
-			'@typescript-eslint/no-explicit-any': 'off',
-			'@typescript-eslint/require-await': 'off',
-			'@typescript-eslint/no-unsafe-return': 'off',
-			'@typescript-eslint/no-unsafe-argument': 'off',
-			'@typescript-eslint/no-invalid-void-type': 'off',
-			'@typescript-eslint/no-unsafe-member-access': 'off',
-			'@typescript-eslint/no-unsafe-assignment': 'off',
-			'@typescript-eslint/no-misused-promises': 'off',
-			'@typescript-eslint/no-unnecessary-condition': 'off',
-			'@typescript-eslint/no-floating-promises': 'off',
-			'@typescript-eslint/no-unsafe-call': 'off',
-			'@typescript-eslint/no-empty-function': 'off',
-			'@typescript-eslint/restrict-plus-operands': 'off',
-			'@typescript-eslint/await-thenable': 'off',
-			'@typescript-eslint/no-confusing-void-expression': 'off',
-			'@typescript-eslint/use-unknown-in-catch-callback-variable': 'off',
-			'@typescript-eslint/prefer-optional-chain': 'off',
-			'@typescript-eslint/no-redundant-type-constituents': 'off',
-			'@typescript-eslint/no-dynamic-delete': 'off',
-			'@typescript-eslint/unified-signatures': 'off',
-			'@typescript-eslint/prefer-for-of': 'off',
-			'class-methods-use-this': 'off',
-			'@typescript-eslint/no-unnecessary-type-constraint': 'off',
-			'@typescript-eslint/return-await': 'off',
-			'@typescript-eslint/no-unnecessary-type-parameters': 'off',
-			'@typescript-eslint/prefer-promise-reject-errors': 'off',
-			'@typescript-eslint/no-deprecated': 'off',
-			'@typescript-eslint/no-misused-spread': 'off',
-			'@typescript-eslint/no-non-null-assertion': 'off',
-			'@typescript-eslint/no-for-in-array': 'off',
-			'@typescript-eslint/no-this-alias': 'off',
-
 			// Disabled, because force programmers to cast anything to `String()` with no profit
 			'@typescript-eslint/restrict-template-expressions': 'off',
 			// Disabled, since case with `or, if empty` is too frequent
@@ -183,6 +147,9 @@ export default tseslint.config(
 			'@typescript-eslint/dot-notation': 'off',
 			// Disabled, because replaced `type` to `interface` and it makes type is incompatible with an `Record`/object
 			'@typescript-eslint/consistent-type-definitions': 'off',
+			// When we get value from an `Record` it may be actually `undefined`. So we want to use optional operator
+			'@typescript-eslint/no-unnecessary-condition': 'off',
+
 			'@typescript-eslint/prefer-readonly': 'error',
 			// TODO: enable 'class-methods-use-this': ['error', { exceptMethods: [] }],
 			'@typescript-eslint/no-empty-object-type': [
@@ -212,6 +179,16 @@ export default tseslint.config(
 			'no-bitwise': 'error',
 
 			'no-use-before-define': 'off',
+		},
+	},
+
+	{
+		files: ['**/*.test.ts'],
+		extends: [tseslint.configs.disableTypeChecked],
+		rules: {
+			'@typescript-eslint/no-unsafe-assignment': 'off',
+			'@typescript-eslint/no-require-imports': 'off',
+			'@typescript-eslint/no-non-null-assertion': 'off',
 		},
 	},
 

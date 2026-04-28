@@ -135,7 +135,7 @@ export async function translateChunk(
 	}
 
 	// Parse the content as JSON translation map
-	let parsedJson;
+	let parsedJson: unknown;
 	try {
 		// The LLM may wrap the JSON in markdown code fences — strip them
 		const json = content

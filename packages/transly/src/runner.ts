@@ -40,7 +40,7 @@ async function writeTargetFile(
 	config: Config,
 	namespace: string,
 	targetLang: string,
-	flatSource: Record<string, string>,
+	flatSource: Record<string, unknown>,
 	cache: CacheFile,
 	fs: FsAdapter,
 ): Promise<void> {
@@ -48,7 +48,7 @@ async function writeTargetFile(
 	const targetPath = join(targetDir, `${namespace}.json`);
 
 	// Read existing target file (if any) to preserve unrelated keys
-	let existingFlat: Record<string, string> = {};
+	let existingFlat: Record<string, unknown> = {};
 	try {
 		await fs.access(targetPath);
 		const raw = await fs.readFile(targetPath, 'utf-8');
@@ -59,14 +59,12 @@ async function writeTargetFile(
 	}
 
 	// Merge: start from existing, then overlay translations from cache
-	const merged: Record<string, string> = { ...existingFlat };
+	const merged: Record<string, unknown> = { ...existingFlat };
 
 	for (const key of Object.keys(flatSource)) {
 		const entry = cache[key];
 		const translation = entry?.translation;
-		if (translation !== undefined) {
-			merged[key] = translation;
-		}
+		merged[key] = translation;
 	}
 
 	// Reconstruct nested JSON and write
@@ -142,7 +140,7 @@ export async function runTranslation(
 			// 5. Build items and split into chunks
 			const items: TranslationItem[] = changedKeys.map((key) => ({
 				key,
-				value: flatSource[key],
+				value: String(flatSource[key]),
 			}));
 
 			const chunks = chunkItems(items, maxBatchSize);

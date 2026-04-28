@@ -31,11 +31,7 @@ export async function fillCacheFromTranslations(
 			const cache = await readCache(config.cacheDir, namespace, language, fs);
 			Object.entries(flattenJson(content)).forEach(([key, translation]) => {
 				// Skip keys that does not exist in source locale
-				if (
-					!sourceNamespaceContent[namespace] ||
-					!sourceNamespaceContent[namespace].has(key)
-				)
-					return;
+				if (!sourceNamespaceContent[namespace]?.has(key)) return;
 
 				const sourceValue = sourceNamespaceContent[namespace].get(key);
 				cache[key] = {

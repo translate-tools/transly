@@ -125,23 +125,41 @@ describe('unflattenJson', () => {
 });
 
 describe('round-trips', () => {
-	it('simple object', () => roundtrip({ a: { b: 'hello' } }));
+	it('simple object', () => {
+		roundtrip({ a: { b: 'hello' } });
+	});
 
-	it('array of strings', () => roundtrip({ tags: ['web', 'mobile'] }));
+	it('array of strings', () => {
+		roundtrip({ tags: ['web', 'mobile'] });
+	});
 
-	it('array of objects', () => roundtrip({ team: [{ name: 'Alice', role: 'admin' }] }));
+	it('array of objects', () => {
+		roundtrip({ team: [{ name: 'Alice', role: 'admin' }] });
+	});
 
-	it('nested arrays', () => roundtrip({ matrix: [['a', 'b'], ['c']] }));
+	it('nested arrays', () => {
+		roundtrip({ matrix: [['a', 'b'], ['c']] });
+	});
 
-	it('dot in key name', () => roundtrip({ 'foo.bar': 'baz' }));
+	it('dot in key name', () => {
+		roundtrip({ 'foo.bar': 'baz' });
+	});
 
-	it('bracket in key name', () => roundtrip({ 'foo[0]': 'baz' }));
+	it('bracket in key name', () => {
+		roundtrip({ 'foo[0]': 'baz' });
+	});
 
-	it('quote in key name', () => roundtrip({ 'foo"bar': 'baz' }));
+	it('quote in key name', () => {
+		roundtrip({ 'foo"bar': 'baz' });
+	});
 
-	it('backslash in key name', () => roundtrip({ 'foo\\bar': 'baz' }));
+	it('backslash in key name', () => {
+		roundtrip({ 'foo\\bar': 'baz' });
+	});
 
-	it('mixed special chars in key', () => roundtrip({ 'a.b["c\\d\']': 'v' }));
+	it('mixed special chars in key', () => {
+		roundtrip({ 'a.b["c\\d\']': 'v' });
+	});
 
 	it('deeply nested with special keys', () => {
 		roundtrip({
