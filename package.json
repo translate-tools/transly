@@ -16,8 +16,8 @@
 		}
 	},
 	"scripts": {
-		"prettify": "eslint --fix \"{*,**/*}.{ts,tsx,js,jsx}\" && prettier --write \"{*,**/*}.{ts,tsx,js,jsx}\" && stylelint '**/*.css' --fix",
-		"lint": "eslint --max-warnings 0 \"{*,**/*}.{ts,tsx,js,jsx}\" && prettier --check \"{*,**/*}.{ts,tsx,js,jsx}\" && stylelint '**/*.css'",
+		"prettify": "eslint --fix \"{*,**/*}.{ts,tsx,js,jsx}\" && prettier --write \"{*,**/*}.{ts,tsx,js,jsx}\"",
+		"lint": "eslint --max-warnings 0 \"{*,**/*}.{ts,tsx,js,jsx}\" && prettier --check \"{*,**/*}.{ts,tsx,js,jsx}\"",
 		"cspell:sync": "eslint . --format json | tsx scripts/sync-cspell-words.ts",
 		"prepare": "husky install"
 	},
@@ -39,8 +39,6 @@
 		"husky": "^9.1.7",
 		"lint-staged": "^16.2.7",
 		"prettier": "^3.8.1",
-		"stylelint": "^17.0.0",
-		"stylelint-config-standard": "^40.0.0",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.54.0"
 	},
