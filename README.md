@@ -254,3 +254,25 @@ type ProgressEvent =
 | Format support | JSON | many | many | many | JSON |
 
 transly is not a key extractor — it translates existing JSON locale files. Pair it with i18next-scanner or a similar tool if you also need to extract keys from source code.
+
+### ❤️ Support & Contribute
+
+This project is open-source under the Apache 2.0 License — it not only allows you to use and modify the code freely, but also protects contributors by explicitly granting patent rights and requiring proper attribution.
+
+Contributions are very welcome — whether it’s code, ideas, bug reports, or improvements.
+
+If you find this tool useful:
+
+* ⭐ Star the repository
+* 📢 Share it with others
+* 💡 Help shape it with your feedback
+
+*Good tools get better when people care.*
+
+Want to help?
+
+* Fix something
+* Suggest something
+* Break something (and report it)
+
+And if you like it, a ⭐ on GitHub goes a long way.
