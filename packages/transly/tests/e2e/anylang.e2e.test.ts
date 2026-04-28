@@ -1,7 +1,7 @@
 /* eslint-disable @cspell/spellchecker */
 import { MicrosoftTranslator } from 'anylang/translators';
 import { defineConfig } from 'src';
-import { anylangTranslator } from 'src/anylang';
+import { anylangAdapter } from 'src/anylang';
 import { describe, expect, it } from 'vitest';
 
 import { runTranslation } from '../../src/runner';
@@ -39,7 +39,7 @@ describe.sequential('MicrosoftTranslator', () => {
 		}),
 	});
 
-	const translator = anylangTranslator(new MicrosoftTranslator());
+	const translator = anylangAdapter(new MicrosoftTranslator());
 	const config = defineConfig({
 		sourceLang: 'en',
 		targetLangs: ['ru', 'it'],

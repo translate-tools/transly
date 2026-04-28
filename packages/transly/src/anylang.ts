@@ -2,7 +2,7 @@ import { TranslatorInstanceMembers } from 'anylang/translators';
 
 import { TranslateChunkFn } from './types';
 
-export const anylangTranslator = (
+export const anylangAdapter = (
 	translator: TranslatorInstanceMembers,
 ): TranslateChunkFn => {
 	return async (items, language, config) => {
