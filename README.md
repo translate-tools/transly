@@ -1,482 +1,256 @@
 # transly
 
-**Cache-driven LLM i18n translation CLI.**
+Cache-driven i18n translation CLI. Translates your JSON locale files incrementally — only strings that actually changed since the last run are sent for translation. The translator is fully configurable: use any LLM, any free translation service, or implement your own.
 
-Translates your i18n JSON locale files using any OpenAI-compatible LLM (OpenRouter, OpenAI, Ollama, etc.), with **incremental updates based on content hashing** — so you only ever pay for strings that actually changed.
+## What it does
 
----
+On each run transly scans your source locale directory, computes a SHA-256 hash of every string, compares it against a local cache, and translates only the keys that are new or changed. Translated strings are written to the target language directories and the cache is updated. If a batch fails mid-run, everything translated so far is already saved — just re-run to continue.
 
-## Why transly?
+## Why transly
 
-Most translation tools re-translate everything on every run, or rely on git history to detect changes. Both approaches have real problems at scale.
-
-| Problem | Common tools | transly |
-|---|---|---|
-| Re-translates unchanged strings | ✅ wastes money & time | ❌ never |
-| Requires git history | often yes | ❌ never |
-| Survives partial LLM failures | rarely | ✅ always |
-| Works with large files | context limit issues | ✅ chunked batches |
-| Prompt fully under your control | limited | ✅ fully |
-| Works with any OpenAI-compatible API | often locked to OpenAI | ✅ any provider |
-
-### How change detection works
-
-transly computes a **SHA-256 hash of each source string value** and stores it in a local cache file alongside the translation. On the next run it compares hashes:
-
-- Hash unchanged → skip, use cached translation
-- Hash changed or key is new → send to LLM
-
-No git. No timestamps. No full-file diffing. Just content.
-
-### Partial failure safety
-
-LLM APIs fail. Rate limits happen. transly writes the cache **after every successful chunk**, not at the end of the run. If chunk 3 of 5 fails, chunks 1 and 2 are already saved. Re-run and it picks up exactly where it left off — no duplicate API calls, no data loss.
-
----
-
-## Installation
-
-```bash
-npm install -D transly
-# or globally
-npm install -g transly
-```
-
-Requires **Node.js ≥ 22**.
-
----
+- Only translates what changed, based on content hashes — not git history, not timestamps
+- Cache is written after every chunk, so partial failures never lose work
+- Translator backend is pluggable: LLM, free API, or your own function
+- Works without any LLM config at all (falls back to a free translation service)
+- Concurrent translation of multiple namespace × language pairs
 
 ## Quick start
 
-### 1. Create a config file
+Install:
 
-Create `transly.config.js` in your project root:
+```bash
+npm install -D transly
+```
 
-```js
-// transly.config.js
-export default {
+Create `transly.config.ts` in your project root:
+
+```ts
+import 'dotenv/config';
+import { defineConfig } from 'transly';
+
+export default defineConfig({
   sourceLang: 'en',
   targetLangs: ['de', 'fr', 'ja'],
-
   localesDir: './src/locales',
-  cacheDir: './.transly-cache',
 
-  model: 'openai/gpt-4o-mini',
-  apiKey: process.env.OPENAI_API_KEY,
-  baseUrl: 'https://openrouter.ai/api/v1', // optional, defaults to OpenRouter
-  systemPrompt: `You are a professional UI translator.
-Return a JSON object mapping each key to its translation in the target language.
-Preserve placeholders like {{name}} and {{count}} exactly.
-Keep translations concise and natural.`,
-  contextPrompt: `The vault is an encrypted directory where app keeps the user files. Not a bank safe.`,
-
-  maxBatchSize: 50, // optional, default: 50
-};
+  llm: {
+    model: 'openai/gpt-4o-mini',
+    apiKey: process.env.OPENAI_API_KEY,
+    baseUrl: 'https://openrouter.ai/api/v1',
+    contextPrompt: 'This is a web application for managing personal finances.',
+  },
+});
 ```
 
-### 2. Organize your locale files
+Put your source strings in `src/locales/en/`:
 
-```
-src/locales/
-  en/
-    common.json
-    features.json
-```
-
-Each file contains nested JSON:
+`src/locales/en/example.json`
 
 ```json
 {
-  "title": "Hello",
-  "nested": {
-    "message": "Welcome, {{name}}!"
-  }
+  "title": "Dashboard",
+  "greeting": "Hello, {{name}}!"
 }
 ```
 
-### 3. Run
+Run:
 
 ```bash
 npx transly translate
 ```
 
-Or with a custom config path:
+Transly writes the translated files to `src/locales/de/`, `src/locales/fr/`, etc., and keeps a cache under `src/locales/.transly/` by default.
+
+If you already have translated files from a previous setup, seed the cache before running so transly does not re-translate everything:
 
 ```bash
-npx transly translate --config ./config/transly.config.js
+npx transly cache hydrate
+npx transly translate
 ```
 
-### 4. Output
+> Add `OPENAI_API_KEY=sk-...` to a `.env` file and use `import 'dotenv/config'` at the top of your config. Never hardcode secrets.
 
-transly writes translated files alongside your source:
+## Free translation (no LLM)
 
-```
-src/locales/
-  en/
-    common.json       ← source (unchanged)
-  de/
-    common.json       ← generated
-  fr/
-    common.json       ← generated
-  ja/
-    common.json       ← generated
-```
+If you omit the `llm` block entirely, transly falls back to Microsoft Translator via the [`anylang`](https://www.npmjs.com/package/anylang) package — no API key required. This is convenient for quick tests or non-critical projects, but the translation quality is noticeably lower than what a well-prompted LLM produces.
 
-And stores the cache:
+```ts
+import { defineConfig } from 'transly';
 
-```
-.transly-cache/
-  common.de.json
-  common.fr.json
-  common.ja.json
+export default defineConfig({
+  sourceLang: 'en',
+  targetLangs: ['de', 'fr', 'ja'],
+  localesDir: './src/locales',
+});
 ```
 
-> **Tip:** Commit the cache directory to version control. This ensures teammates and CI never re-translate strings that are already done.
+## Cache management
 
-## Initialize Cache from Existing Translations
+The cache lives at `<localesDir>/.transly/` by default. You can override this with the `cacheDir` config option.
 
-If you already have translated locale files (from another tool or a previous setup), you can bootstrap Transly’s cache without re-translating everything.
+**Strategy 1 — commit the cache.** The cache directory is the source of truth for what has been translated. Committing it means CI and teammates never pay to re-translate strings that are already done.
 
-Use:
+**Strategy 2 — gitignore the cache, seed on demand.** Add `.transly/` to `.gitignore`. On a fresh clone, seed the cache from the existing translated files before running translation:
 
 ```bash
-transly cache seed
+npx transly cache hydrate
+npx transly translate
 ```
 
-### What it does
+This keeps the repository clean at the cost of an extra step per fresh clone.
 
-* Scans your existing locale files
-* Extracts translations
-* Populates the internal cache
-* Enables incremental translation (only new/changed messages will be processed)
-
-### When to use
-
-* Migrating from another i18n tool
-* Cache directory was removed or corrupted
-* First-time setup with pre-existing translations
-
-### Typical flow
+**Dropping the cache.** To force a full re-translation:
 
 ```bash
-# 1. Seed cache from current translations
-transly cache seed
-
-# 2. Run translation (only missing/changed keys will be processed)
-transly translate
+npx transly cache drop
 ```
-
-### Notes
-
-* This command does **not** modify your locale files
-* Safe to run multiple times
-* Existing cache entries may be updated if translations changed
-
-After seeding, Transly will treat your current translations as the baseline and only process diffs going forward.
-
----
 
 ## Config reference
 
 ```ts
-type Config = {
-  /** Source language code. Must match a directory name under localesDir. */
-  sourceLang: string;
+import { defineConfig } from 'transly';
 
-  /** List of target language codes to translate into. */
-  targetLangs: string[];
+export default defineConfig({
+  // Required
+  sourceLang: 'en',
+  targetLangs: ['de', 'fr'],
+  localesDir: './src/locales',
 
-  /** Path to the root locales directory. */
-  localesDir: string;
+  // Optional
+  cacheDir: './.transly',       // default: <localesDir>/.transly
+  maxBatchSize: 50,              // keys per translation request, default: 50
+  concurrency: 10,               // parallel tasks, default: 10
+  debug: false,
 
-  /** Directory where cache files are stored. Created automatically. */
-  cacheDir: string;
+  // LLM translator (optional — omit to use the free fallback)
+  llm: {
+    model: 'openai/gpt-4o-mini',
+    apiKey: process.env.OPENAI_API_KEY,
+    baseUrl: 'https://openrouter.ai/api/v1', // any OpenAI-compatible endpoint
+    systemPrompt: '...',   // string or (targetLang: string) => string
+    contextPrompt: '...',  // string or (targetLang: string) => string
+  },
 
-  /** LLM model identifier (e.g. "openai/gpt-4o-mini", "anthropic/claude-3-haiku"). */
-  model: string;
-
-  /** API key for the LLM provider. */
-  apiKey: string;
-
-  /**
-   * Base URL of the OpenAI-compatible API.
-   * Defaults to https://openrouter.ai/api/v1
-   */
-  baseUrl?: string;
-
-  /**
-   * System prompt sent to the LLM before each batch.
-   * You have full control. The user message will contain:
-   *   { targetLang: "de", items: [{ key: "title", value: "Hello" }, ...] }
-   * The LLM must respond with a JSON object: { "title": "Hallo", ... }
-   */
-  prompt: string;
-
-  /**
-   * Maximum number of keys per LLM request.
-   * Larger values = fewer API calls but higher risk of hitting context limits.
-   * Default: 50
-   */
-  maxBatchSize?: number;
-};
+  // Custom translator function (overrides llm and the free fallback)
+  translateChunk: async (items, targetLang, config) => {
+    // items: Array<{ key: string; value: string }>
+    // return: Record<string, string>  (key → translated value)
+  },
+});
 ```
 
-### Validation
-
-The config is validated with [Zod](https://zod.dev) at startup. Invalid configs produce a clear error message listing every field that failed, then exit with code 1.
-
----
+Config files are validated with [Zod](https://zod.dev) at startup. Invalid configs exit with code 1 and list every failing field.
 
 ## CLI reference
 
 ```
-Usage: transly [options]
-
-Cache-driven LLM i18n translation CLI
-
-Options:
-  -V, --version          output the version number
-  -c, --config <path>    Path to config file (default: "./transly.config.js")
-  -h, --help             display help for command
+transly translate [-c <path>] [-j <n>]
 ```
 
-### Exit codes
+Translates all namespaces into all target languages.
 
-| Code | Meaning |
+| Option | Description |
 |---|---|
-| `0` | All translations completed successfully |
-| `1` | Config error or translation failure |
-
----
-
-## LLM request format
-
-Each batch is sent as a standard chat completion request:
-
-```json
-{
-  "model": "openai/gpt-4o-mini",
-  "messages": [
-    {
-      "role": "system",
-      "content": "<your prompt>"
-    },
-    {
-      "role": "user",
-      "content": "{\"targetLang\":\"de\",\"items\":[{\"key\":\"title\",\"value\":\"Hello\"}]}"
-    }
-  ]
-}
-```
-
-The LLM must respond with a JSON object mapping each key to its translation:
-
-```json
-{
-  "title": "Hallo"
-}
-```
-
-transly automatically strips markdown code fences (` ```json ... ``` `) from the response if the model wraps its output in them.
-
----
-
-## Cache format
-
-One cache file per namespace × target language, stored as JSON:
+| `-c, --config <path>` | Path to config file (default: auto-discover `transly.config.ts` / `.js`) |
+| `-j, --concurrency <n>` | Number of parallel translation tasks |
 
 ```
-.transly-cache/
-  features.de.json
-  features.fr.json
-  common.de.json
+transly cache hydrate [-c <path>]
+transly cache restore [-c <path>]   # alias
+transly cache seed    [-c <path>]   # alias
 ```
 
-Each file maps flat dot-notation keys to their hash and translations:
+Populates the cache from existing translated files without modifying them. Use this when migrating from another tool or after a cache drop.
 
-```json
-{
-  "title": {
-    "hash": "185f8db32921bd46d35cc2e877d9e8...",
-    "translations": {
-      "de": "Hallo",
-      "fr": "Bonjour"
-    }
+```
+transly cache drop [-c <path>]
+```
+
+Deletes the cache directory.
+
+**Exit codes:** `0` — success. `1` — config error or translation failure.
+
+## Custom translators
+
+The `translateChunk` option lets you plug in any translation backend. It receives a batch of `{ key, value }` pairs and must return a `Record<string, string>` mapping each key to its translation.
+
+A minimal example:
+
+```ts
+import { defineConfig } from 'transly';
+
+export default defineConfig({
+  sourceLang: 'en',
+  targetLangs: ['de', 'fr'],
+  localesDir: './src/locales',
+
+  async translateChunk(items, targetLang) {
+    // call your translation API here
+    return Object.fromEntries(
+      items.map((item) => [item.key, myTranslate(item.value, targetLang)]),
+    );
   },
-  "nested.message": {
-    "hash": "a94a8fe5ccb19ba61c4c0873d391e...",
-    "translations": {
-      "de": "Willkommen, {{name}}!",
-      "fr": "Bienvenue, {{name}} !"
-    }
-  }
-}
+});
 ```
 
-- `hash` — SHA-256 of the source string. If this changes, the key is retranslated.
-- `translations` — one entry per target language. A key is retranslated for a language if its entry is missing.
+To use any of the services supported by the [`anylang`](https://www.npmjs.com/package/anylang) package (Google Translate, DeepL, Yandex, etc.), use the `anylangAdapter` helper:
 
----
+```ts
+import { GoogleTranslator } from 'anylang/translators';
+import { defineConfig, anylangAdapter } from 'transly';
+
+export default defineConfig({
+  sourceLang: 'en',
+  targetLangs: ['de', 'fr'],
+  localesDir: './src/locales',
+  translateChunk: anylangAdapter(new GoogleTranslator()),
+});
+```
+
+See the `packages/transly/examples/` directory for more usage patterns.
 
 ## Programmatic API
 
-transly exposes its internals as TypeScript modules for use in custom scripts or build tools.
+```ts
+import { runTranslation, type ProgressEvent } from 'transly/runner';
+import { defineConfig, anylangAdapter } from 'transly';
+```
 
-### `runTranslation(config, fs?, translateFn?, onProgress?)`
-
-The main pipeline. Processes all namespaces and target languages.
+**`runTranslation(config, fs?, translateFn?, onProgress?)`** — the main pipeline. Processes all namespace × language pairs respecting concurrency settings.
 
 ```ts
-import { runTranslation } from 'transly/runner';
-import type { ProgressEvent } from 'transly/runner';
-
 await runTranslation(config, undefined, undefined, (event: ProgressEvent) => {
-  if (event.type === 'namespace_start' && event.changedKeys > 0) {
-    console.log(`Translating ${event.changedKeys} keys in ${event.namespace} → ${event.targetLang}`);
+  if (event.type === 'task_start') {
+    console.log(`${event.namespace} → ${event.targetLang}: ${event.changedKeys} keys to translate`);
   }
 });
 ```
 
-**Parameters:**
-
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `config` | `Config` | required | Validated config object |
-| `fs` | `FsAdapter` | Node `fs/promises` | Filesystem adapter (injectable for testing) |
-| `translateFn` | `typeof translateChunk` | real LLM call | Translation function (injectable for testing) |
-| `onProgress` | `ProgressCallback` | `undefined` | Progress event handler |
-
-**Progress events:**
+**Progress event types:**
 
 ```ts
 type ProgressEvent =
-  | { type: 'namespace_start'; namespace: string; targetLang: string; totalKeys: number; changedKeys: number }
-  | { type: 'chunk_done';      namespace: string; targetLang: string; chunkIndex: number; totalChunks: number }
-  | { type: 'namespace_done'; namespace: string; targetLang: string }
-  | { type: 'no_changes';     namespace: string; targetLang: string };
+  | { type: 'scan_complete'; namespaces: number; targetLangs: number; totalTasks: number; totalKeys: number }
+  | { type: 'task_start';    namespace: string; targetLang: string; totalKeys: number; changedKeys: number }
+  | { type: 'chunk_done';    namespace: string; targetLang: string; chunkIndex: number; totalChunks: number; chunkSize: number }
+  | { type: 'task_done';     namespace: string; targetLang: string }
+  | { type: 'task_skip';     namespace: string; targetLang: string };
 ```
 
----
+**`defineConfig(config)`** — identity helper that provides TypeScript types when writing `.ts` config files.
 
-### `loadConfig(configPath)`
+**`anylangAdapter(translator)`** — wraps any `anylang`-compatible translator instance into a `translateChunk` function.
 
-Dynamically imports an ESM config file and validates it with Zod.
+## Comparison
 
-```ts
-import { loadConfig } from 'transly/config';
+| Feature | transly | i18next-scanner | @lingui/cli | @formatjs/cli | i18n-auto-translation |
+|---|---|---|---|---|---|
+| Incremental (hash-based) | ✅ | ❌ | ❌ | ❌ | ❌ |
+| LLM support | ✅ | ❌ | ❌ | ❌ | ✅ |
+| Custom translator | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Free translation fallback | ✅ | ❌ | ❌ | ❌ | ✅ |
+| Partial-failure safety | ✅ | n/a | n/a | n/a | ❌ |
+| Extracts keys from source code | ❌ | ✅ | ✅ | ✅ | ❌ |
+| Format support | JSON | many | many | many | JSON |
 
-const config = await loadConfig('./transly.config.js');
-```
-
-Throws a descriptive `Error` if the file cannot be loaded or the config is invalid.
-
----
-
-### `flattenJson(obj)` / `unflattenJson(flat)`
-
-Convert between nested JSON and flat dot-notation maps.
-
-```ts
-import { flattenJson, unflattenJson } from 'transly/flatten';
-
-flattenJson({ nested: { message: 'World' } });
-// → { 'nested.message': 'World' }
-
-unflattenJson({ 'nested.message': 'World' });
-// → { nested: { message: 'World' } }
-```
-
----
-
-### `computeHash(value)`
-
-SHA-256 hash of a string. Used for cache change detection.
-
-```ts
-import { computeHash } from 'transly/cache';
-
-computeHash('Hello'); // → '185f8db32921bd46d35cc2e877d9e8...'
-```
-
----
-
-### `chunkItems(items, maxBatchSize?)`
-
-Splits a flat list of translation items into batches.
-
-```ts
-import { chunkItems } from 'transly/chunker';
-
-const chunks = chunkItems(items, 25);
-// → TranslationItem[][]
-```
-
----
-
-### `translateChunk(items, targetLang, config)`
-
-Sends one batch to the LLM and returns the translated key→value map.
-
-```ts
-import { translateChunk } from 'transly/llm';
-
-const translations = await translateChunk(
-  [{ key: 'title', value: 'Hello' }],
-  'de',
-  config,
-);
-// → { title: 'Hallo' }
-```
-
-Throws on HTTP error, network failure, or malformed LLM response.
-
----
-
-### `FsAdapter` interface
-
-All file I/O goes through this interface, making the entire pipeline testable without touching the real filesystem.
-
-```ts
-type FsAdapter = {
-  readFile(path: string, encoding: BufferEncoding): Promise<string>;
-  writeFile(path: string, data: string, encoding: BufferEncoding): Promise<void>;
-  mkdir(path: string, options: { recursive: boolean }): Promise<string | undefined>;
-  readdir(path: string): Promise<string[]>;
-  access(path: string): Promise<void>;
-};
-```
-
-Compatible with Node's `fs/promises` and [`memfs`](https://github.com/streamich/memfs).
-
----
-
-## Supported LLM providers
-
-Any provider that exposes an OpenAI-compatible `/chat/completions` endpoint works:
-
-| Provider | `baseUrl` |
-|---|---|
-| [OpenRouter](https://openrouter.ai) | `https://openrouter.ai/api/v1` (default) |
-| OpenAI | `https://api.openai.com/v1` |
-| Anthropic (via OpenRouter) | use OpenRouter |
-| Ollama (local) | `http://localhost:11434/v1` |
-| Any other | set `baseUrl` accordingly |
-
----
-
-## Tips
-
-**Commit the cache.** The cache is the source of truth for what has been translated. Committing it means CI and teammates never re-translate already-done strings.
-
-**Tune `maxBatchSize` for your model.** Smaller models have smaller context windows. If you see truncated responses, reduce `maxBatchSize` to 20–30.
-
-**Write a precise prompt.** The quality of translations depends entirely on your prompt. Include glossary terms, tone guidelines, and placeholder preservation rules. See `packages/app/transmart.config.js` in this repo for a real-world example.
-
-**Use environment variables for the API key.** Never hardcode secrets in the config file.
-
-```js
-export default {
-  apiKey: process.env.OPENAI_API_KEY ?? (() => { throw new Error('OPENAI_API_KEY is not set'); })(),
-  // ...
-};
-```
+transly is not a key extractor — it translates existing JSON locale files. Pair it with i18next-scanner or a similar tool if you also need to extract keys from source code.
