@@ -1,5 +1,7 @@
 #!/usr/bin/env node
+import { MicrosoftTranslator } from 'anylang/translators';
 import { Command } from 'commander';
+import { anylangTranslator } from 'src/anylang';
 import { loadConfig } from 'src/config';
 import { z } from 'zod';
 
@@ -58,15 +60,13 @@ export default function (program: Command) {
 				isTTY: process.stdout.isTTY ?? false,
 			});
 
+			let translator = config.translateChunk ?? translateChunk;
+			if (!config.llm) translator = anylangTranslator(new MicrosoftTranslator());
+
 			try {
-				await runTranslation(
-					config,
-					makeNodeFsAdapter(),
-					config.translateChunk ?? translateChunk,
-					(event) => {
-						renderer.onEvent(event);
-					},
-				);
+				await runTranslation(config, makeNodeFsAdapter(), translator, (event) => {
+					renderer.onEvent(event);
+				});
 				renderer.printSummary();
 			} catch (err) {
 				console.error(

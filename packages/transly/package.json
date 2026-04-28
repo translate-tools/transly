@@ -31,6 +31,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"anylang": "^3.3.3",
 		"commander": "^14.0.0",
 		"find-up": "^8.0.0",
 		"openai": "^6.34.0",
