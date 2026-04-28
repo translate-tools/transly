@@ -21,15 +21,19 @@
 		"transly": "./dist/cli.js"
 	},
 	"main": "./dist/index.js",
-	"files": ["dist"],
+	"files": ["dist", "LICENSE", "README.md"],
 	"scripts": {
 		"build": "tsdown",
 		"test": "vitest",
-		"publish": "npm publish .publish",
+		"publish": "npm test && npm run build && npm publish .publish",
+		"example": "cd examples/free && tsx ../../src/cli translate",
+		"preview": "cd examples/free && tsx ../../dist/cli translate",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"anylang": "^3.3.3",
 		"commander": "^14.0.0",
+		"find-up": "^8.0.0",
 		"openai": "^6.34.0",
 		"zod": "^3.25.28"
 	},

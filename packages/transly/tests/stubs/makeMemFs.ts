@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import type { FsAdapter } from '../../src/types.js';
+import type { FsAdapter } from '../../src/types';
 
 /**
  * Simple in-memory FsAdapter backed by a Map.

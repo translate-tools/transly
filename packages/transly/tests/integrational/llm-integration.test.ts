@@ -6,13 +6,13 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 
-import { translateChunk } from '../../src/llm.js';
-import { runTranslation } from '../../src/runner.js';
-import type { CacheFile } from '../../src/types.js';
+import { translateChunk } from '../../src/llm';
+import { runTranslation } from '../../src/runner';
+import type { CacheFile } from '../../src/types';
 
-import { makeConfig } from '../stubs/makeConfig.js';
-import { makeFetchStub, makeOpenAiResponseObject } from '../stubs/makeFetchStub.js';
-import { makeMemFs } from '../stubs/makeMemFs.js';
+import { makeConfig } from '../stubs/makeConfig';
+import { makeFetchStub, makeOpenAiResponseObject } from '../stubs/makeFetchStub';
+import { makeMemFs } from '../stubs/makeMemFs';
 
 const fetchSpy = vi.spyOn(globalThis, 'fetch');
 const mockApiResponse = (json: Record<string, string>) => {

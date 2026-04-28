@@ -8,10 +8,10 @@
 import { defineConfig } from 'src';
 import { describe, expect, it } from 'vitest';
 
-import { translateChunk } from '../../src/llm.js';
-import { runTranslation } from '../../src/runner.js';
+import { translateChunk } from '../../src/llm';
+import { runTranslation } from '../../src/runner';
 
-import { makeMemFs } from '../stubs/makeMemFs.js';
+import { makeMemFs } from '../stubs/makeMemFs';
 
 const isE2EEnabled =
 	process.env.TEST_E2E_LLM !== 'enabled' || !process.env.OPENAI_API_KEY;
@@ -75,11 +75,13 @@ describe.skipIf(isE2EEnabled).concurrent('i18n locale files translation', () => 
 				localesDir: '/locales',
 				cacheDir: '/.transly',
 
-				apiKey: process.env.OPENAI_API_KEY!,
-				baseUrl: process.env.OPENAI_API_URL,
+				llm: {
+					apiKey: process.env.OPENAI_API_KEY!,
+					baseUrl: process.env.OPENAI_API_URL,
 
-				model,
-				contextPrompt: `We translate the user profiles bio with their stories. Make it sound native`,
+					model,
+					contextPrompt: `We translate the user profiles bio with their stories. Make it sound native`,
+				},
 
 				maxBatchSize: 50, // optional, default: 50
 				fetch: fetchSpy,

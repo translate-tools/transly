@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { computeHash, getChangedKeys, readCache, writeCache } from '../src/cache.js';
-import type { CacheFile } from '../src/types.js';
-import { makeSimpleMemFs } from './stubs/makeMemFs.js';
+import { computeHash, getChangedKeys, readCache, writeCache } from '../src/cache';
+import type { CacheFile } from '../src/types';
+import { makeSimpleMemFs } from './stubs/makeMemFs';
 
 describe('computeHash', () => {
 	it('returns a 64-character hex string (SHA-256)', () => {

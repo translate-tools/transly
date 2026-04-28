@@ -1,7 +1,7 @@
 import OpenAI, { ClientOptions } from 'openai';
 import z from 'zod';
 
-import type { Config, PromptGenerator, TranslationItem } from './types.js';
+import type { Config, PromptGenerator, TranslationItem } from './types';
 
 function getDefaultSystemPrompt(languageCode: string) {
 	const languageName = new Intl.DisplayNames('en', { type: 'language' }).of(
@@ -54,9 +54,12 @@ export async function translateChunk(
 	config: Config,
 	clientConfig?: ClientOptions,
 ): Promise<LlmTranslationResponse> {
+	const llmConfig = config.llm;
+	if (!llmConfig) throw new Error('LLM config is not provided');
+
 	const client = new OpenAI({
-		apiKey: config.apiKey,
-		baseURL: config.baseUrl,
+		apiKey: llmConfig.apiKey,
+		baseURL: llmConfig.baseUrl,
 		fetch: async (url, init) => {
 			const res = await (config.fetch ?? fetch)(url, init);
 
@@ -84,21 +87,21 @@ export async function translateChunk(
 
 	const response = await client.chat.completions
 		.create({
-			model: config.model,
+			model: llmConfig.model,
 			messages: [
 				{
 					role: 'system',
-					content: config.systemPrompt
-						? buildPrompt(config.systemPrompt)
+					content: llmConfig.systemPrompt
+						? buildPrompt(llmConfig.systemPrompt)
 						: getDefaultSystemPrompt(targetLang),
 				},
-				...(config.contextPrompt
+				...(llmConfig.contextPrompt
 					? [
 							{
 								role: 'system',
 								content:
 									'The app context:\n\n' +
-									buildPrompt(config.contextPrompt),
+									buildPrompt(llmConfig.contextPrompt),
 							} as const,
 						]
 					: []),

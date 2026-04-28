@@ -1,24 +1,35 @@
 import { join } from 'path';
 
-import { computeHash, getChangedKeys, readCache, writeCache } from './cache.js';
-import { chunkItems, DEFAULT_MAX_BATCH_SIZE } from './chunker.js';
-import { flattenJson, unflattenJson } from './flatten.js';
-import { translateChunk } from './llm.js';
-import { scanNamespaces } from './scanner.js';
-import type { CacheFile, Config, FsAdapter, TranslationItem } from './types.js';
-import { makeNodeFsAdapter } from './utils/makeNodeFsAdapter.js';
+import { computeHash, getCacheDir, getChangedKeys, readCache, writeCache } from './cache';
+import { chunkItems, DEFAULT_MAX_BATCH_SIZE } from './chunker';
+import { DEFAULT_CONCURRENCY, runWithConcurrency } from './concurrency';
+import { flattenJson, unflattenJson } from './flatten';
+import { translateChunk } from './llm';
+import { scanNamespaces } from './scanner';
+import type { CacheFile, Config, FsAdapter, TranslationItem } from './types';
+import { makeNodeFsAdapter } from './utils/makeNodeFsAdapter';
 
-/**
- * Progress callback invoked at key milestones during translation.
- */
 export type ProgressCallback = (event: ProgressEvent) => void;
 
 export type ProgressEvent =
 	| {
-			type: 'namespace_start';
+			type: 'scan_complete';
+			/** Number of source namespace files found */
+			namespaces: number;
+			/** Number of target languages */
+			targetLangs: number;
+			/** Total (namespace × targetLang) task count */
+			totalTasks: number;
+			/** Sum of all source keys across all namespaces */
+			totalKeys: number;
+	  }
+	| {
+			type: 'task_start';
 			namespace: string;
 			targetLang: string;
+			/** Total number of flat keys in the source namespace */
 			totalKeys: number;
+			/** Number of keys that differ from the cache (need translation) */
 			changedKeys: number;
 	  }
 	| {
@@ -27,15 +38,12 @@ export type ProgressEvent =
 			targetLang: string;
 			chunkIndex: number;
 			totalChunks: number;
+			/** Number of keys translated in this specific chunk */
+			chunkSize: number;
 	  }
-	| { type: 'namespace_done'; namespace: string; targetLang: string }
-	| { type: 'no_changes'; namespace: string; targetLang: string };
+	| { type: 'task_done'; namespace: string; targetLang: string }
+	| { type: 'task_skip'; namespace: string; targetLang: string };
 
-/**
- * Merges cached translations with the existing target locale file and writes
- * the result. Only keys present in the source are written; unrelated keys
- * already in the target file are preserved.
- */
 async function writeTargetFile(
 	config: Config,
 	namespace: string,
@@ -47,51 +55,98 @@ async function writeTargetFile(
 	const targetDir = join(config.localesDir, targetLang);
 	const targetPath = join(targetDir, `${namespace}.json`);
 
-	// Read existing target file (if any) to preserve unrelated keys
 	let existingFlat: Record<string, unknown> = {};
 	try {
 		await fs.access(targetPath);
 		const raw = await fs.readFile(targetPath, 'utf-8');
-		const parsed = JSON.parse(raw) as Record<string, unknown>;
-		existingFlat = flattenJson(parsed);
+		existingFlat = flattenJson(JSON.parse(raw) as Record<string, unknown>);
 	} catch {
-		// File doesn't exist yet — start fresh
+		// file doesn't exist yet
 	}
 
-	// Merge: start from existing, then overlay translations from cache
 	const merged: Record<string, unknown> = { ...existingFlat };
-
 	for (const key of Object.keys(flatSource)) {
-		const entry = cache[key];
-		const translation = entry?.translation;
-		merged[key] = translation;
+		merged[key] = cache[key]?.translation;
 	}
 
-	// Reconstruct nested JSON and write
 	const nested = unflattenJson(merged);
 	await fs.mkdir(targetDir, { recursive: true });
 	await fs.writeFile(targetPath, JSON.stringify(nested, null, 2), 'utf-8');
 }
 
+async function runTask(
+	config: Config,
+	namespace: string,
+	targetLang: string,
+	flatSource: Record<string, unknown>,
+	maxBatchSize: number,
+	fs: FsAdapter,
+	translateFn: typeof translateChunk,
+	onProgress?: ProgressCallback,
+): Promise<void> {
+	const cacheDir = getCacheDir(config);
+	const cache = await readCache(cacheDir, namespace, targetLang, fs);
+	const changedKeys = getChangedKeys(flatSource, cache);
+
+	onProgress?.({
+		type: 'task_start',
+		namespace,
+		targetLang,
+		totalKeys: Object.keys(flatSource).length,
+		changedKeys: changedKeys.length,
+	});
+
+	if (changedKeys.length === 0) {
+		onProgress?.({ type: 'task_skip', namespace, targetLang });
+		await writeTargetFile(config, namespace, targetLang, flatSource, cache, fs);
+		return;
+	}
+
+	const items: TranslationItem[] = changedKeys.map((key) => ({
+		key,
+		value: String(flatSource[key]),
+	}));
+
+	const chunks = chunkItems(items, maxBatchSize);
+
+	for (let i = 0; i < chunks.length; i++) {
+		const chunk = chunks[i];
+
+		// translateFn may throw — cache already has prior chunks persisted
+		const translations = await translateFn(chunk, targetLang, config);
+
+		for (const item of chunk) {
+			cache[item.key] = {
+				hash: computeHash(item.value),
+				translation: translations[item.key],
+			};
+		}
+
+		await writeCache(cacheDir, namespace, targetLang, cache, fs);
+
+		onProgress?.({
+			type: 'chunk_done',
+			namespace,
+			targetLang,
+			chunkIndex: i,
+			totalChunks: chunks.length,
+			chunkSize: chunk.length,
+		});
+	}
+
+	await writeTargetFile(config, namespace, targetLang, flatSource, cache, fs);
+	onProgress?.({ type: 'task_done', namespace, targetLang });
+}
+
 /**
  * Main translation pipeline.
  *
- * For each namespace × target language:
- *   1. Flatten source JSON
- *   2. Load cache
- *   3. Detect changed keys
- *   4. Split into chunks
- *   5. Call LLM per chunk (cache written after each successful chunk)
- *   6. Merge translations back into target locale file
- *
- * Partial failure safety: if a chunk fails, all previously processed chunks
- * for that namespace+lang are already persisted in the cache. The error is
- * re-thrown so the caller can decide how to handle it.
- *
- * @param config - Validated user configuration
- * @param fs - Filesystem adapter (defaults to Node's fs/promises)
- * @param translateFn - LLM translation function (injectable for testing)
- * @param onProgress - Optional progress callback
+ * Translates every namespace × target language pair concurrently (up to
+ * `config.concurrency` workers). Chunks within each task are sequential so
+ * that partial-failure cache safety is preserved: if a chunk throws, all
+ * previously written chunks for that task remain in the cache. Tasks already
+ * in-flight when an error occurs are allowed to complete before the first
+ * error is re-thrown.
  */
 export async function runTranslation(
 	config: Config,
@@ -100,84 +155,46 @@ export async function runTranslation(
 	onProgress?: ProgressCallback,
 ): Promise<void> {
 	const maxBatchSize = config.maxBatchSize ?? DEFAULT_MAX_BATCH_SIZE;
+	const concurrency = config.concurrency ?? DEFAULT_CONCURRENCY;
 
-	// 1. Discover all source namespace files
 	const namespaces = await scanNamespaces(config.localesDir, config.sourceLang, fs);
 
-	for (const { namespace, content } of namespaces) {
-		// 2. Flatten source JSON
-		const flatSource = flattenJson(content);
+	const namespacesWithFlat = namespaces.map(({ namespace, content }) => ({
+		namespace,
+		flatSource: flattenJson(content),
+	}));
 
+	const totalKeys = namespacesWithFlat.reduce(
+		(sum, { flatSource }) => sum + Object.keys(flatSource).length,
+		0,
+	);
+
+	onProgress?.({
+		type: 'scan_complete',
+		namespaces: namespaces.length,
+		targetLangs: config.targetLangs.length,
+		totalTasks: namespaces.length * config.targetLangs.length,
+		totalKeys,
+	});
+
+	const tasks: Array<() => Promise<void>> = [];
+
+	for (const { namespace, flatSource } of namespacesWithFlat) {
 		for (const targetLang of config.targetLangs) {
-			// 3. Load existing cache
-			const cache = await readCache(config.cacheDir, namespace, targetLang, fs);
-
-			// 4. Detect changed keys
-			const changedKeys = getChangedKeys(flatSource, cache);
-
-			onProgress?.({
-				type: 'namespace_start',
-				namespace,
-				targetLang,
-				totalKeys: Object.keys(flatSource).length,
-				changedKeys: changedKeys.length,
-			});
-
-			if (changedKeys.length === 0) {
-				onProgress?.({ type: 'no_changes', namespace, targetLang });
-				// Still need to write the output file from cache
-				await writeTargetFile(
+			tasks.push(() =>
+				runTask(
 					config,
 					namespace,
 					targetLang,
 					flatSource,
-					cache,
+					maxBatchSize,
 					fs,
-				);
-				continue;
-			}
-
-			// 5. Build items and split into chunks
-			const items: TranslationItem[] = changedKeys.map((key) => ({
-				key,
-				value: String(flatSource[key]),
-			}));
-
-			const chunks = chunkItems(items, maxBatchSize);
-
-			// 6. Translate chunk by chunk, persisting cache after each success
-			for (let i = 0; i < chunks.length; i++) {
-				const chunk = chunks[i];
-
-				// translateFn may throw — let it propagate; cache already has prior chunks
-				const translations = await translateFn(chunk, targetLang, config);
-
-				// Update cache entries for this chunk
-				for (const item of chunk) {
-					const hash = computeHash(item.value);
-
-					cache[item.key] = {
-						hash,
-						translation: translations[item.key],
-					};
-				}
-
-				// Persist cache immediately after each successful chunk
-				await writeCache(config.cacheDir, namespace, targetLang, cache, fs);
-
-				onProgress?.({
-					type: 'chunk_done',
-					namespace,
-					targetLang,
-					chunkIndex: i,
-					totalChunks: chunks.length,
-				});
-			}
-
-			// 7. Write merged target locale file
-			await writeTargetFile(config, namespace, targetLang, flatSource, cache, fs);
-
-			onProgress?.({ type: 'namespace_done', namespace, targetLang });
+					translateFn,
+					onProgress,
+				),
+			);
 		}
 	}
+
+	await runWithConcurrency(tasks, concurrency);
 }

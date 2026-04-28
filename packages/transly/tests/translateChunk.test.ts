@@ -2,15 +2,15 @@
 import { APIConnectionError } from 'openai';
 import { describe, expect, it, vi } from 'vitest';
 
-import { translateChunk } from '../src/llm.js';
-import type { TranslationItem } from '../src/types.js';
-import { makeConfig } from './stubs/makeConfig.js';
+import { translateChunk } from '../src/llm';
+import type { TranslationItem } from '../src/types';
+import { makeConfig } from './stubs/makeConfig';
 import {
 	makeFetchStub,
 	makeFetchStubText,
 	makeNetworkErrorStub,
 	makeOpenAiResponseObject,
-} from './stubs/makeFetchStub.js';
+} from './stubs/makeFetchStub';
 
 const items: TranslationItem[] = [
 	{ key: 'greeting', value: 'Hello' },
@@ -62,7 +62,16 @@ describe('outgoing request', () => {
 
 	it('sends a POST to the correct endpoint with auth header', async () => {
 		mockApiResponse({ greeting: 'Hallo', farewell: 'Tschüss' });
-		await translateChunk(items, 'de', makeConfig({ apiKey: 'sk-test-123' }));
+		await translateChunk(
+			items,
+			'de',
+			makeConfig({
+				llm: {
+					model: 'test',
+					apiKey: 'sk-test-123',
+				},
+			}),
+		);
 
 		expect(fetchSpy).toHaveBeenLastCalledWith(
 			expect.stringContaining('/chat/completions'),
@@ -81,9 +90,12 @@ describe('outgoing request', () => {
 		mockApiResponse({ greeting: 'Hallo', farewell: 'Tschüss' });
 
 		const config = makeConfig({
-			model: 'openai/gpt-4o-mini',
-			systemPrompt: 'Translate carefully.',
-			contextPrompt: 'Our app is a note taking app',
+			llm: {
+				model: 'openai/gpt-4o-mini',
+				apiKey: 'sk-test-123',
+				systemPrompt: 'Translate carefully.',
+				contextPrompt: 'Our app is a note taking app',
+			},
 		});
 		await translateChunk(items, 'de', config);
 
@@ -114,7 +126,7 @@ describe('outgoing request', () => {
 
 	it('uses the default OpenAI base URL when baseUrl is not set', async () => {
 		mockApiResponse({ greeting: 'Hallo', farewell: 'Tschüss' });
-		await translateChunk(items, 'de', makeConfig({ baseUrl: undefined }));
+		await translateChunk(items, 'de', makeConfig());
 
 		expect(fetchSpy).toBeCalledWith(
 			'https://api.openai.com/v1/chat/completions',
@@ -124,7 +136,13 @@ describe('outgoing request', () => {
 
 	it('uses a custom baseUrl when provided', async () => {
 		mockApiResponse({ greeting: 'Hallo', farewell: 'Tschüss' });
-		await translateChunk(items, 'de', makeConfig({ baseUrl: 'https://my.proxy/v1' }));
+		await translateChunk(
+			items,
+			'de',
+			makeConfig({
+				llm: { model: 'test', apiKey: '', baseUrl: 'https://my.proxy/v1' },
+			}),
+		);
 
 		expect(fetchSpy).toBeCalledWith(
 			'https://my.proxy/v1/chat/completions',
@@ -137,7 +155,9 @@ describe('outgoing request', () => {
 		await translateChunk(
 			items,
 			'de',
-			makeConfig({ baseUrl: 'https://my.proxy/v1/' }),
+			makeConfig({
+				llm: { model: 'test', apiKey: '', baseUrl: 'https://my.proxy/v1/' },
+			}),
 		);
 
 		expect(fetchSpy).toBeCalledWith(

@@ -1,10 +1,10 @@
-import { fillCacheFromTranslations } from 'src/cacheUtils.js';
+import { fillCacheFromTranslations } from 'src/cacheUtils';
 import { describe, expect, it } from 'vitest';
 
-import { runTranslation } from '../src/runner.js';
-import { makeConfig } from './stubs/makeConfig.js';
-import { makeMemFs } from './stubs/makeMemFs.js';
-import { makeMockTranslate, type TranslateCallLog } from './stubs/makeTranslate.js';
+import { runTranslation } from '../src/runner';
+import { makeConfig } from './stubs/makeConfig';
+import { makeMemFs } from './stubs/makeMemFs';
+import { makeMockTranslate, type TranslateCallLog } from './stubs/makeTranslate';
 
 describe.sequential('Rebuild the cache', () => {
 	const config = makeConfig();

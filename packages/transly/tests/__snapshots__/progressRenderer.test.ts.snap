@@ -1,0 +1,57 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProgressRenderer — TTY > full TTY run matches snapshot 1`] = `
+{
+  "lines": [
+    "
+✅ Translation complete — 2 task(s) in 0.0s",
+  ],
+  "writes": [
+    "Translating 2 namespaces × 2 languages = 4 tasks (5 keys)
+
+",
+    "  [de] notes                  ░░░░░░░░░░  translating…  (0/3 keys)
+  Progress: 0/4 tasks done  [0.0s]
+",
+    "[2A",
+    "[0J",
+    "  [de] notes                  ███████░░░  chunk 2/2  (2/3 keys)
+  Progress: 0/4 tasks done  [0.0s]
+",
+    "[2A",
+    "[0J",
+    "  [de] notes                  ██████████  ✓  3 key(s) translated
+  Progress: 1/4 tasks done  [0.0s]
+",
+    "[2A",
+    "[0J",
+    "  [de] notes                  ██████████  ✓  3 key(s) translated
+  [fr] notes                  ░░░░░░░░░░  translating…  (0/0 keys)
+  Progress: 1/4 tasks done  [0.0s]
+",
+    "[3A",
+    "[0J",
+    "  [de] notes                  ██████████  ✓  3 key(s) translated
+  [fr] notes                  ──────────  ✓  no changes
+  Progress: 2/4 tasks done  [0.0s]
+",
+    "[3A",
+    "[0J",
+    "  [de] notes                  ██████████  ✓  3 key(s) translated
+  [fr] notes                  ──────────  ✓  no changes
+  Progress: 2/4 tasks done  [0.0s]
+",
+  ],
+}
+`;
+
+exports[`ProgressRenderer — non-TTY > full non-TTY run matches snapshot 1`] = `
+[
+  "00:00:00  Found 2 namespace(s) × 2 language(s) = 4 task(s), 5 keys total",
+  "00:00:00  [start] [de] notes: 3/3 keys to translate",
+  "00:00:00  [done]  [de] notes: 3 key(s) translated",
+  "00:00:00  [skip]  [fr] notes: no changes",
+  "
+✅ Translation complete — 2 task(s) in 0.0s",
+]
+`;
