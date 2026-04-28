@@ -30,5 +30,5 @@
 		"baseUrl": ".",
 		"types": ["vitest/globals", "node"]
 	},
-	"include": ["*.ts", "src/**/*.ts", "tests/**/*.ts"]
+	"include": ["*.ts", "**/*.ts"]
 }

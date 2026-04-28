@@ -1,0 +1,6 @@
+{
+	"hello": "Hello",
+	"nested": {
+		"world": "World2"
+	}
+}
