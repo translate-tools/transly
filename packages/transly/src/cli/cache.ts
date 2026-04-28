@@ -9,7 +9,7 @@ import { fillCacheFromTranslations } from '../cacheUtils';
 import { makeNodeFsAdapter } from '../utils/makeNodeFsAdapter';
 
 const hydrateOptionsSchema = z.object({
-	config: z.string().default('./transly.config'),
+	config: z.string().optional(),
 });
 
 export default function (program: Command) {

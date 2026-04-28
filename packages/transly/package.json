@@ -1,6 +1,6 @@
 {
 	"name": "transly",
-	"version": "0.3.2",
+	"version": "0.3.4",
 	"description": "Cache-driven incremental translation (via LLM, GoogleTranslate, etc.)",
 	"keywords": [
 		"i18n",

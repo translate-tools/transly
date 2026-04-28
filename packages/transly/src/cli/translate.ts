@@ -21,7 +21,7 @@ export const labelLanguageCode = (languageCode: string) => {
 };
 
 const translateOptionsSchema = z.object({
-	config: z.string().default('./transly.config'),
+	config: z.string().optional(),
 	concurrency: z.coerce.number().int().positive().optional(),
 });
 
