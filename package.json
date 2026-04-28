@@ -1,0 +1,48 @@
+{
+	"name": "transly",
+	"author": "Robert Vitonsky <robert@vitonsky.net>",
+	"license": "Apache-2.0",
+	"engines": {
+		"node": ">=22"
+	},
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"onFail": "error"
+		},
+		"packageManager": {
+			"name": "npm",
+			"onFail": "error"
+		}
+	},
+	"scripts": {
+		"prettify": "eslint --fix \"{*,**/*}.{ts,tsx,js,jsx}\" && prettier --write \"{*,**/*}.{ts,tsx,js,jsx}\" && stylelint '**/*.css' --fix",
+		"lint": "eslint --max-warnings 0 \"{*,**/*}.{ts,tsx,js,jsx}\" && prettier --check \"{*,**/*}.{ts,tsx,js,jsx}\" && stylelint '**/*.css'",
+		"cspell:sync": "eslint . --format json | tsx scripts/sync-cspell-words.ts",
+		"prepare": "husky install"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^20.3.1",
+		"@commitlint/config-conventional": "^20.3.1",
+		"@cspell/dict-software-terms": "^5.2.2",
+		"@cspell/eslint-plugin": "^9.6.2",
+		"eslint": "^9.39.2",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-import-resolver-typescript": "^4.4.4",
+		"eslint-plugin-i18next": "^6.1.4",
+		"eslint-plugin-import": "^2.32.0",
+		"eslint-plugin-paths": "^1.1.0",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^7.0.1",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
+		"eslint-plugin-unused-imports": "^4.3.0",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.8.1",
+		"stylelint": "^17.0.0",
+		"stylelint-config-standard": "^40.0.0",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.54.0"
+	},
+	"workspaces": ["packages/*"]
+}

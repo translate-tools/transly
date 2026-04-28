@@ -1,0 +1,11 @@
+booleans
+destructured
+langs
+monorepo
+recurse
+transly
+unescaped
+unflatten
+unflattens
+unknown
+word
