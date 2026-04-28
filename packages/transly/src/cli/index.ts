@@ -3,15 +3,16 @@ import { Command } from 'commander';
 import { resolve } from 'path';
 import { z } from 'zod';
 
-import { description, name, version } from '../package.json';
-import { getCacheDir } from './cache';
-import { fillCacheFromTranslations } from './cacheUtils';
-import { DEFAULT_CONCURRENCY } from './concurrency';
-import { loadConfig } from './config';
-import { translateChunk } from './llm';
-import { ProgressRenderer } from './progressRenderer';
-import { runTranslation } from './runner';
-import { makeNodeFsAdapter } from './utils/makeNodeFsAdapter';
+import { description, name, version } from '../../package.json';
+
+import { getCacheDir } from '../cache';
+import { fillCacheFromTranslations } from '../cacheUtils';
+import { DEFAULT_CONCURRENCY } from '../concurrency';
+import { loadConfig } from '../config';
+import { translateChunk } from '../llm';
+import { ProgressRenderer } from '../progressRenderer';
+import { runTranslation } from '../runner';
+import { makeNodeFsAdapter } from '../utils/makeNodeFsAdapter';
 
 const program = new Command().name(name).description(description).version(version);
 
