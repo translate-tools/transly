@@ -2,8 +2,6 @@ import { globalIgnores } from 'eslint/config';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import paths from 'eslint-plugin-paths';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
 import { readFileSync } from 'fs';
@@ -226,59 +224,6 @@ export default tseslint.config(
 		extends: [tseslint.configs.disableTypeChecked],
 		rules: {
 			'@typescript-eslint/no-require-imports': 'off',
-		},
-	},
-
-	// React
-	{
-		files: ['**/*.{js,jsx,mjs,cjs,ts,tsx}'],
-		extends: [
-			react.configs.flat['recommended']!,
-			reactHooks.configs.flat['recommended-latest'],
-		],
-		settings: {
-			react: {
-				version: 'detect',
-			},
-		},
-		languageOptions: {
-			parserOptions: {
-				ecmaFeatures: {
-					jsx: true,
-				},
-			},
-			globals: {
-				...globals.browser,
-			},
-		},
-		rules: {
-			'react/prop-types': 'off',
-			'react/no-unescaped-entities': 'off',
-			'react/display-name': 'off',
-			'react/no-deprecated': 'off',
-
-			'react-hooks/refs': 'off',
-			'react-hooks/set-state-in-effect': 'off',
-
-			// TODO: find option for specify immutable objects for improve consistency
-			// for example in `src/hooks/useLiveRef.ts` required as deps a `forceUpdate`
-			// but setter from `useState` is never required
-			'react-hooks/exhaustive-deps': [
-				'warn',
-				{
-					// custom hooks with deps
-					additionalHooks:
-						'(useEqualMemo|useImmutableCallback|useIsomorphicLayoutEffect)',
-				},
-			],
-
-			'react/jsx-curly-brace-presence': [
-				'error',
-				{
-					props: 'never',
-					children: 'never',
-				},
-			],
 		},
 	},
 
