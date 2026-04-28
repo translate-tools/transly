@@ -44,6 +44,11 @@ export type Config = {
 	contextPrompt?: string | PromptGenerator;
 	/** Maximum number of keys per LLM request batch */
 	maxBatchSize?: number;
+	/**
+	 * Maximum number of (namespace × language) tasks to run simultaneously.
+	 * Defaults to 10.
+	 */
+	concurrency?: number;
 	translateChunk?: (
 		items: TranslationItem[],
 		targetLang: string,

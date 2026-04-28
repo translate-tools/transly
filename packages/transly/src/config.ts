@@ -24,6 +24,7 @@ export const configSchema = z.object({
 		.or(z.string().min(1, 'system prompt must not be empty'))
 		.optional(),
 	maxBatchSize: z.number().int().positive().optional(),
+	concurrency: z.number().int().positive().optional(),
 	translateChunk: z.any().optional(),
 	fetch: z.any().optional(),
 	debug: z.coerce.boolean().optional(),
