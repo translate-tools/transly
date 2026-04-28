@@ -34,8 +34,9 @@ export default defineConfig({
 				// copy metadata
 				for (const file of [
 					'package.json',
-					{ from: '../../LICENSE', to: 'LICENSE' },
 					{ from: '../../README.md', to: 'README.md' },
+					{ from: '../../assets/demo.gif', to: 'assets/demo.gif' },
+					{ from: '../../LICENSE', to: 'LICENSE' },
 				]) {
 					const { from, to } =
 						typeof file === 'string' ? { from: file, to: file } : file;
@@ -44,7 +45,11 @@ export default defineConfig({
 					if (!fs.existsSync(src))
 						throw new Error(`File "${src}" is not found`);
 
-					fs.copyFileSync(src, path.join(publishDir, to));
+					const writePath = path.join(publishDir, to);
+					fs.mkdirSync(path.dirname(path.resolve(writePath)), {
+						recursive: true,
+					});
+					fs.copyFileSync(src, writePath);
 				}
 			},
 		},

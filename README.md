@@ -2,6 +2,8 @@
 
 Cache-driven i18n translation CLI. Translates your JSON locale files incrementally — only strings that actually changed since the last run are sent for translation. The translator is fully configurable: use any LLM, any free translation service, or implement your own.
 
+![](./assets/demo.gif)
+
 ## What it does
 
 On each run transly scans your source locale directory, computes a SHA-256 hash of every string, compares it against a local cache, and translates only the keys that are new or changed. Translated strings are written to the target language directories and the cache is updated. If a batch fails mid-run, everything translated so far is already saved — just re-run to continue.

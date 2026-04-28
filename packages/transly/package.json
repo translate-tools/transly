@@ -1,6 +1,6 @@
 {
 	"name": "transly",
-	"version": "0.3.6",
+	"version": "0.3.8",
 	"description": "Cache-driven incremental translation (via LLM, GoogleTranslate, etc.)",
 	"keywords": [
 		"i18n",
@@ -35,7 +35,7 @@
 		"transly": "./dist/cli.js"
 	},
 	"main": "./dist/index.cjs",
-	"files": ["dist", "LICENSE", "README.md"],
+	"files": ["dist", "assets", "LICENSE", "README.md"],
 	"scripts": {
 		"build": "tsdown",
 		"test": "vitest",
