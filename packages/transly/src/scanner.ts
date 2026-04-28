@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import type { FsAdapter } from './types.js';
+import type { FsAdapter } from './types';
 
 /**
  * Represents a discovered namespace file in the source locale directory.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { chunkItems, DEFAULT_MAX_BATCH_SIZE } from '../src/chunker.js';
-import type { TranslationItem } from '../src/types.js';
+import { chunkItems, DEFAULT_MAX_BATCH_SIZE } from '../src/chunker';
+import type { TranslationItem } from '../src/types';
 
 function makeItems(count: number): TranslationItem[] {
 	return Array.from({ length: count }, (_, i) => ({

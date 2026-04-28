@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import { join } from 'path';
 
-import type { CacheFile, Config, FsAdapter } from './types.js';
+import type { CacheFile, Config, FsAdapter } from './types';
 
 export function getCacheDir(config: Config) {
 	return config.cacheDir ?? join(config.localesDir, '.transly');

@@ -6,21 +6,21 @@ import { z } from 'zod';
 import { description, name, version } from '../package.json';
 import { getCacheDir } from './cache';
 import { fillCacheFromTranslations } from './cacheUtils';
-import { DEFAULT_CONCURRENCY } from './concurrency.js';
-import { loadConfig } from './config.js';
+import { DEFAULT_CONCURRENCY } from './concurrency';
+import { loadConfig } from './config';
 import { translateChunk } from './llm';
-import { ProgressRenderer } from './progressRenderer.js';
-import { runTranslation } from './runner.js';
+import { ProgressRenderer } from './progressRenderer';
+import { runTranslation } from './runner';
 import { makeNodeFsAdapter } from './utils/makeNodeFsAdapter';
 
 const program = new Command().name(name).description(description).version(version);
 
 const hydrateOptionsSchema = z.object({
-	config: z.string().default('./transly.config.js'),
+	config: z.string().default('./transly.config'),
 });
 
 const translateOptionsSchema = z.object({
-	config: z.string().default('./transly.config.js'),
+	config: z.string().default('./transly.config'),
 	concurrency: z.coerce.number().int().positive().optional(),
 });
 

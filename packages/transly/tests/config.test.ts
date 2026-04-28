@@ -1,7 +1,7 @@
-import { Config } from 'src/types.js';
+import { Config } from 'src/types';
 import { describe, expect, it } from 'vitest';
 
-import { configSchema } from '../src/config.js';
+import { configSchema } from '../src/config';
 
 const validConfig = {
 	sourceLang: 'en',

@@ -1,4 +1,4 @@
-import type { Config } from '../../src/types.js';
+import type { Config } from '../../src/types';
 
 /**
  * Creates a minimal valid Config with sensible test defaults.

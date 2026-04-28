@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { flattenJson, unflattenJson } from '../src/flatten.js';
+import { flattenJson, unflattenJson } from '../src/flatten';
 
 describe('flattenJson', () => {
 	it('flattens a simple flat object unchanged', () => {

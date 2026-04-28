@@ -2,15 +2,15 @@
 import { APIConnectionError } from 'openai';
 import { describe, expect, it, vi } from 'vitest';
 
-import { translateChunk } from '../src/llm.js';
-import type { TranslationItem } from '../src/types.js';
-import { makeConfig } from './stubs/makeConfig.js';
+import { translateChunk } from '../src/llm';
+import type { TranslationItem } from '../src/types';
+import { makeConfig } from './stubs/makeConfig';
 import {
 	makeFetchStub,
 	makeFetchStubText,
 	makeNetworkErrorStub,
 	makeOpenAiResponseObject,
-} from './stubs/makeFetchStub.js';
+} from './stubs/makeFetchStub';
 
 const items: TranslationItem[] = [
 	{ key: 'greeting', value: 'Hello' },

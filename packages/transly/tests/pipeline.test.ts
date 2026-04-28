@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { computeHash } from '../src/cache.js';
-import { runTranslation } from '../src/runner.js';
-import type { CacheFile } from '../src/types.js';
-import { makeConfig } from './stubs/makeConfig.js';
-import { makeMemFs } from './stubs/makeMemFs.js';
-import { makeMockTranslate, type TranslateCallLog } from './stubs/makeTranslate.js';
+import { computeHash } from '../src/cache';
+import { runTranslation } from '../src/runner';
+import type { CacheFile } from '../src/types';
+import { makeConfig } from './stubs/makeConfig';
+import { makeMemFs } from './stubs/makeMemFs';
+import { makeMockTranslate, type TranslateCallLog } from './stubs/makeTranslate';
 
 // ─── Core translation correctness ────────────────────────────────────────────
 

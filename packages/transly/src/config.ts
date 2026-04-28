@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { Config, TranslateChunkFn } from './types.js';
+import type { Config, TranslateChunkFn } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const asFn = <T extends (...args: any[]) => any>() =>

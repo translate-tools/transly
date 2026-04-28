@@ -1,4 +1,4 @@
-import type { TranslationItem } from './types.js';
+import type { TranslationItem } from './types';
 
 /** Default maximum number of items per LLM request batch */
 export const DEFAULT_MAX_BATCH_SIZE = 50;

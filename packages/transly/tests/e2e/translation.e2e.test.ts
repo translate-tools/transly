@@ -8,10 +8,10 @@
 import { defineConfig } from 'src';
 import { describe, expect, it } from 'vitest';
 
-import { translateChunk } from '../../src/llm.js';
-import { runTranslation } from '../../src/runner.js';
+import { translateChunk } from '../../src/llm';
+import { runTranslation } from '../../src/runner';
 
-import { makeMemFs } from '../stubs/makeMemFs.js';
+import { makeMemFs } from '../stubs/makeMemFs';
 
 const isE2EEnabled =
 	process.env.TEST_E2E_LLM !== 'enabled' || !process.env.OPENAI_API_KEY;

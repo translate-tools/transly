@@ -1,4 +1,4 @@
-import type { ProgressEvent } from './runner.js';
+import type { ProgressEvent } from './runner';
 
 type TaskStatus = 'queued' | 'active' | 'done' | 'skipped';
 

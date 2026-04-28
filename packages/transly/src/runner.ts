@@ -1,19 +1,13 @@
 import { join } from 'path';
 
-import {
-	computeHash,
-	getCacheDir,
-	getChangedKeys,
-	readCache,
-	writeCache,
-} from './cache.js';
-import { chunkItems, DEFAULT_MAX_BATCH_SIZE } from './chunker.js';
-import { DEFAULT_CONCURRENCY, runWithConcurrency } from './concurrency.js';
-import { flattenJson, unflattenJson } from './flatten.js';
-import { translateChunk } from './llm.js';
-import { scanNamespaces } from './scanner.js';
-import type { CacheFile, Config, FsAdapter, TranslationItem } from './types.js';
-import { makeNodeFsAdapter } from './utils/makeNodeFsAdapter.js';
+import { computeHash, getCacheDir, getChangedKeys, readCache, writeCache } from './cache';
+import { chunkItems, DEFAULT_MAX_BATCH_SIZE } from './chunker';
+import { DEFAULT_CONCURRENCY, runWithConcurrency } from './concurrency';
+import { flattenJson, unflattenJson } from './flatten';
+import { translateChunk } from './llm';
+import { scanNamespaces } from './scanner';
+import type { CacheFile, Config, FsAdapter, TranslationItem } from './types';
+import { makeNodeFsAdapter } from './utils/makeNodeFsAdapter';
 
 export type ProgressCallback = (event: ProgressEvent) => void;
 

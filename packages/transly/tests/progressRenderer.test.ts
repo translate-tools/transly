@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { ProgressRenderer } from '../src/progressRenderer.js';
-import type { ProgressEvent } from '../src/runner.js';
+import { ProgressRenderer } from '../src/progressRenderer';
+import type { ProgressEvent } from '../src/runner';
 
 function makeRenderer(isTTY: boolean) {
 	const lines: string[] = [];

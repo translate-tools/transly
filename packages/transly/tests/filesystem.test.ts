@@ -2,12 +2,12 @@
 import { fs as memfsFs, vol } from 'memfs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { computeHash, readCache, writeCache } from '../src/cache.js';
-import { runTranslation } from '../src/runner.js';
-import { scanNamespaces } from '../src/scanner.js';
-import type { CacheFile, FsAdapter } from '../src/types.js';
-import { makeConfig } from './stubs/makeConfig.js';
-import { makeMockTranslate } from './stubs/makeTranslate.js';
+import { computeHash, readCache, writeCache } from '../src/cache';
+import { runTranslation } from '../src/runner';
+import { scanNamespaces } from '../src/scanner';
+import type { CacheFile, FsAdapter } from '../src/types';
+import { makeConfig } from './stubs/makeConfig';
+import { makeMockTranslate } from './stubs/makeTranslate';
 
 /**
  * Wraps memfs in our FsAdapter interface.

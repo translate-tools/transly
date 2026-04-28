@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { computeHash } from '../src/cache.js';
-import { runTranslation } from '../src/runner.js';
-import type { CacheFile, TranslationItem } from '../src/types.js';
-import { makeConfig } from './stubs/makeConfig.js';
-import { makeMemFs } from './stubs/makeMemFs.js';
-import { makeMockTranslate, type TranslateCallLog } from './stubs/makeTranslate.js';
+import { computeHash } from '../src/cache';
+import { runTranslation } from '../src/runner';
+import type { CacheFile, TranslationItem } from '../src/types';
+import { makeConfig } from './stubs/makeConfig';
+import { makeMemFs } from './stubs/makeMemFs';
+import { makeMockTranslate, type TranslateCallLog } from './stubs/makeTranslate';
 
 // Use a small batch size so tests can force multiple chunks with few keys.
 const config = makeConfig({ maxBatchSize: 2 });

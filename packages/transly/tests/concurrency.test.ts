@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { runWithConcurrency } from '../src/concurrency.js';
+import { runWithConcurrency } from '../src/concurrency';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

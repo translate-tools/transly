@@ -1,7 +1,7 @@
 import OpenAI, { ClientOptions } from 'openai';
 import z from 'zod';
 
-import type { Config, PromptGenerator, TranslationItem } from './types.js';
+import type { Config, PromptGenerator, TranslationItem } from './types';
 
 function getDefaultSystemPrompt(languageCode: string) {
 	const languageName = new Intl.DisplayNames('en', { type: 'language' }).of(

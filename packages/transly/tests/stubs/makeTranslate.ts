@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 
-import type { TranslationItem } from '../../src/types.js';
+import type { TranslationItem } from '../../src/types';
 
 export type TranslateCallLog = { items: TranslationItem[]; targetLang: string };
 

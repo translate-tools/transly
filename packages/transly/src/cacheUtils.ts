@@ -1,8 +1,8 @@
-import { computeHash, getCacheDir, readCache, writeCache } from './cache.js';
-import { flattenJson } from './flatten.js';
-import { scanNamespaces } from './scanner.js';
-import type { Config, FsAdapter } from './types.js';
-import { makeNodeFsAdapter } from './utils/makeNodeFsAdapter.js';
+import { computeHash, getCacheDir, readCache, writeCache } from './cache';
+import { flattenJson } from './flatten';
+import { scanNamespaces } from './scanner';
+import type { Config, FsAdapter } from './types';
+import { makeNodeFsAdapter } from './utils/makeNodeFsAdapter';
 
 export async function fillCacheFromTranslations(
 	config: Config,
