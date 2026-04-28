@@ -77,7 +77,11 @@ export async function loadConfigFile(configPath: string): Promise<Config> {
 export async function loadConfig(path?: string) {
 	const configPath = path
 		? resolve(path)
-		: await findUp(['transly.config.ts', 'transly.config.js']);
+		: await findUp(
+				['mts', 'cts', 'ts', 'mjs', 'cjs', 'js'].map(
+					(ext) => `transly.config.${ext}`,
+				),
+			);
 
 	if (!configPath) throw new Error('Config file is not found');
 

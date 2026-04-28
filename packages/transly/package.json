@@ -1,7 +1,7 @@
 {
 	"name": "transly",
-	"version": "0.2.0",
-	"description": "Cache-driven LLM i18n translation CLI",
+	"version": "0.3.8",
+	"description": "Cache-driven incremental translation (via LLM, GoogleTranslate, etc.)",
 	"keywords": [
 		"i18n",
 		"i18next",
@@ -11,21 +11,35 @@
 		"l10n",
 		"globalization"
 	],
+	"homepage": "https://github.com/translate-tools/transly",
+	"bugs": {
+		"url": "https://github.com/translate-tools/transly/issues"
+	},
 	"author": "Robert Vitonsky <robert@vitonsky.net>",
-	"license": "MIT",
+	"license": "Apache-2.0",
 	"type": "module",
 	"engines": {
 		"node": ">=22"
 	},
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"onFail": "error"
+		},
+		"packageManager": {
+			"name": "npm",
+			"onFail": "error"
+		}
+	},
 	"bin": {
 		"transly": "./dist/cli.js"
 	},
-	"main": "./dist/index.js",
-	"files": ["dist", "LICENSE", "README.md"],
+	"main": "./dist/index.cjs",
+	"files": ["dist", "assets", "LICENSE", "README.md"],
 	"scripts": {
 		"build": "tsdown",
 		"test": "vitest",
-		"publish": "npm test && npm run build && npm publish .publish",
+		"release": "vitest run && npm run build && npm publish .publish",
 		"example": "cd examples/free && tsx ../../src/cli translate",
 		"preview": "cd examples/free && tsx ../../dist/cli translate",
 		"typecheck": "tsc --noEmit"
@@ -44,5 +58,18 @@
 		"tsdown": "^0.12.0",
 		"typescript": "^5.9.3",
 		"vitest": "^3.0.0"
-	}
+	},
+	"module": "./dist/index.js",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./cli": {
+			"import": "./dist/cli.js",
+			"require": "./dist/cli.cjs"
+		},
+		"./package.json": "./package.json"
+	},
+	"types": "./dist/index.d.cts"
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { MicrosoftTranslator } from 'anylang/translators';
+import { MicrosoftTranslator } from 'anylang/translators/index.js';
 import { Command } from 'commander';
 import { anylangAdapter } from 'src/anylang';
 import { loadConfig } from 'src/config';
@@ -21,7 +21,7 @@ export const labelLanguageCode = (languageCode: string) => {
 };
 
 const translateOptionsSchema = z.object({
-	config: z.string().default('./transly.config'),
+	config: z.string().optional(),
 	concurrency: z.coerce.number().int().positive().optional(),
 });
 
@@ -63,7 +63,11 @@ export default function (program: Command) {
 			let translator = config.translateChunk;
 			if (!translator) {
 				if (config.llm) translator = translateChunk;
-				else translator = anylangAdapter(new MicrosoftTranslator());
+				else
+					translator = anylangAdapter(
+						new MicrosoftTranslator(),
+						MicrosoftTranslator.getSupportedLanguages(),
+					);
 			}
 
 			try {

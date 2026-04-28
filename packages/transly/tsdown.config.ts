@@ -18,11 +18,9 @@ export default defineConfig({
 	},
 	format: ['esm', 'cjs'],
 	dts: true,
-	outputOptions: {
-		entryFileNames: '[name].js',
-		chunkFileNames: '[name].js',
-		assetFileNames: '[name][extname]', // ← key line
-	},
+	exports: true,
+	hash: false,
+
 	plugins: [
 		{
 			name: 'prepare-publish',
@@ -36,8 +34,9 @@ export default defineConfig({
 				// copy metadata
 				for (const file of [
 					'package.json',
-					{ from: '../../LICENSE', to: 'LICENSE' },
 					{ from: '../../README.md', to: 'README.md' },
+					{ from: '../../assets/demo.gif', to: 'assets/demo.gif' },
+					{ from: '../../LICENSE', to: 'LICENSE' },
 				]) {
 					const { from, to } =
 						typeof file === 'string' ? { from: file, to: file } : file;
@@ -46,7 +45,11 @@ export default defineConfig({
 					if (!fs.existsSync(src))
 						throw new Error(`File "${src}" is not found`);
 
-					fs.copyFileSync(src, path.join(publishDir, to));
+					const writePath = path.join(publishDir, to);
+					fs.mkdirSync(path.dirname(path.resolve(writePath)), {
+						recursive: true,
+					});
+					fs.copyFileSync(src, writePath);
 				}
 			},
 		},
