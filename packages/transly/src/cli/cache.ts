@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { existsSync, rmSync } from 'fs';
+import { getCacheDir } from 'src/cache';
 import { loadConfig } from 'src/config';
 import { z } from 'zod';
 
@@ -25,6 +27,18 @@ export default function (program: Command) {
 
 			console.log('Hydrating cache...');
 			await fillCacheFromTranslations(config, makeNodeFsAdapter());
+		});
+
+	cache
+		.command('drop')
+		.option('-c, --config <path>', 'Path to config file')
+		.action(async (rawOptions: unknown) => {
+			const options = hydrateOptionsSchema.parse(rawOptions);
+			const { config } = await loadConfig(options.config);
+
+			const cacheDir = getCacheDir(config);
+			console.log(`Delete cache directory ${cacheDir}`);
+			if (existsSync(cacheDir)) rmSync(cacheDir, { recursive: true, force: true });
 		});
 
 	return cache;
