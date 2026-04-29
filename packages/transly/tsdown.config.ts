@@ -35,7 +35,6 @@ export default defineConfig({
 				for (const file of [
 					'package.json',
 					{ from: '../../README.md', to: 'README.md' },
-					{ from: '../../assets/demo.gif', to: 'assets/demo.gif' },
 					{ from: '../../LICENSE', to: 'LICENSE' },
 				]) {
 					const { from, to } =
