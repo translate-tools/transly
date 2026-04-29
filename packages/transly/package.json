@@ -1,6 +1,6 @@
 {
 	"name": "transly",
-	"version": "0.3.8",
+	"version": "0.3.10",
 	"description": "Cache-driven incremental translation (via LLM, GoogleTranslate, etc.)",
 	"keywords": [
 		"i18n",
@@ -11,6 +11,10 @@
 		"l10n",
 		"globalization"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/translate-tools/transly"
+	},
 	"homepage": "https://github.com/translate-tools/transly",
 	"bugs": {
 		"url": "https://github.com/translate-tools/transly/issues"
