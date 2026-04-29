@@ -1,3 +1,7 @@
+[![npm](https://img.shields.io/npm/v/transly)](https://www.npmjs.com/package/transly)
+[![downloads](https://img.shields.io/npm/dw/transly)](https://www.npmjs.com/package/transly)
+[![license](https://img.shields.io/npm/l/transly)](https://github.com/translate-tools/transly/blob/master/LICENSE)
+
 # transly
 
 Cache-driven i18n translation CLI. Translates your JSON locale files incrementally — only strings that actually changed since the last run are sent for translation. The translator is fully configurable: use any LLM, any free translation service, or implement your own.
